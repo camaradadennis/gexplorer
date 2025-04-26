@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<interface>
+  <requires lib='gtk' version='4.10' />
+  <object class='GtkApplicationWindow' id='main_window'>
+    <property name='default-width'>800</property>
+    <property name='default-height'>600</property>
+    <property name='hide-on-close'>false</property>
+    <property name='titlebar'>
+      <object class='GtkHeaderBar' id='header'>
+        <child type='title'>
+          <object class='GtkLabel'>
+            <property name='label'>GExplorer</property>
+            <property name='justify'>GTK_JUSTIFY_CENTER</property>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name='child'>
+      <object class='GtkDrawingArea' id='graphArea'>
+      </object>
+    </property>
+  </object>
+</interface>
