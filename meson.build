@@ -8,7 +8,11 @@ project('gexplorer', 'cpp',
 includes = include_directories('include')
 
 gnome = import('gnome')
-gtkmm_dep = dependency('gtkmm-4.0')
+
+deps = [
+    dependency('gtkmm-4.0'),
+    dependency('boost'),
+]
 
 resources = gnome.compile_resources(
     'resources',
@@ -17,6 +21,7 @@ resources = gnome.compile_resources(
 )
 
 cpp_sources = files(
+    'src/graph.cc',
     'src/graph_drawing_area.cc',
     'src/main.cc',
     'src/main_window.cc',
@@ -27,6 +32,6 @@ executable(
     cpp_sources,
     resources,
     include_directories: includes,
-    dependencies: gtkmm_dep,
+    dependencies: deps,
     win_subsystem: 'windows'
 )

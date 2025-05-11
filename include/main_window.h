@@ -5,6 +5,9 @@
 
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/builder.h>
+#include <gtkmm/filedialog.h>
+
+class GraphDrawingArea;
 
 class MainWindow final: public Gtk::ApplicationWindow
 {
@@ -12,7 +15,15 @@ public:
     MainWindow(BaseObjectType*, const Glib::RefPtr<Gtk::Builder>&);
 
 private:
-    GraphDrawingArea m_graph_drawing_area;
+    void open_file_dialog();
+
+    void on_file_selection(const Glib::RefPtr<Gio::AsyncResult>&,
+                           const Glib::RefPtr<Gtk::FileDialog>&);
+
+    void load_file_contents(const Glib::RefPtr<Gio::AsyncResult>&,
+                            const Glib::RefPtr<Gio::File>&);
+
+    GraphDrawingArea* m_graph_area;
 };
 
 #endif // MAIN_WINDOW_H
