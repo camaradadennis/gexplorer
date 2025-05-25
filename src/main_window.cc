@@ -1,24 +1,15 @@
-#include "graph.h"
+#include "osm_parser.h"
 #include "graph_drawing_area.h"
 #include "main_window.h"
 
-#include <gtkmm/menubutton.h>
+#include <gtkmm/alertdialog.h>
 #include <gtkmm/error.h>
+#include <gtkmm/menubutton.h>
 
-#include <gtkmm/eventcontrollerscroll.h>
-
-#include <iostream>
 
 #define THROW_INVALID_ID(id) \
     { throw Gtk::BuilderError(Gtk::BuilderError::INVALID_ID, \
             "no object named \"" id "\" in ui definition"); }
-
-
-static bool called_scroll(double dx, double dy)
-{
-    std::cout << "Scroll (dx, dy): (" << dx << ", " << dy << ")" << std::endl;
-    return true;
-}
 
 
 MainWindow::MainWindow(BaseObjectType* cobject,
@@ -49,10 +40,16 @@ MainWindow::MainWindow(BaseObjectType* cobject,
 
     add_action("load", sigc::mem_fun(*this, &MainWindow::open_file_dialog));
 
-    auto mouse_scroll = Gtk::EventControllerScroll::create();
-    mouse_scroll->signal_scroll().connect(
-        sigc::ptr_fun(called_scroll), true);
-    add_controller(mouse_scroll);
+    m_search_bar = builder->get_widget<Gtk::Entry>("search-bar");
+    m_search_bar->signal_activate().connect(
+        sigc::mem_fun(*this, &MainWindow::on_search_activate));
+}
+
+
+void MainWindow::on_search_activate()
+{
+    auto buffer = m_search_bar->get_buffer();
+    auto text = buffer->get_text();
 }
 
 
@@ -75,33 +72,27 @@ void MainWindow::on_file_selection(
     try
     {
         auto file = dialog->open_finish(result);
-        file->load_contents_async(sigc::bind(sigc::mem_fun(
-            *this, &MainWindow::load_file_contents),
-            file
-        ));
+
+        std::string fpath = file->get_path();
+
+        try
+        {
+            auto g = parse_osm(fpath);
+            m_graph_area->set_graph(std::move(g));
+        }
+        catch (...)
+        {
+            auto alert = Gtk::AlertDialog::create();
+            alert->set_message(
+                "Could not parse file. Make sure it is in a proper "
+                "OSM XML format.");
+
+            alert->show(*this);
+        }
     }
     catch (const Gtk::DialogError& err)
     {
-        // not actually an error
-        std::cout << "No file selected: " << err.what() << std::endl;
+        if (err.code() != Gtk::DialogError::DISMISSED)
+            throw err;
     }
-}
-
-
-void MainWindow::load_file_contents(
-        const Glib::RefPtr<Gio::AsyncResult>& result,
-        const Glib::RefPtr<Gio::File>& file)
-{
-    char* contents = nullptr;
-    gsize length = 0;
-
-    if (file->load_contents_finish(result, contents, length))
-    {
-        auto g = Graph::from(contents);
-        m_graph_area->set_graph(std::move(g));
-    }
-    else
-        std::cout << "Not ok" << std::endl;
-
-    g_free(contents);
 }

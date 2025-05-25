@@ -25,6 +25,7 @@ cpp_sources = files(
     'src/graph_drawing_area.cc',
     'src/main.cc',
     'src/main_window.cc',
+    'src/osm_parser.cc',
 )
 
 executable(

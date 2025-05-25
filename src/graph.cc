@@ -3,73 +3,36 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/random_layout.hpp>
 
+#include <limits>           // for numeric_limits<>::max()
+#include <utility>          // for move()
 #include <vector>
 
 using namespace boost;
 
 
-std::unique_ptr<Graph> Graph::from(const char* contents)
+Graph::Graph(Graph::AdjList&& adj_list)
+    : m_adj_list{ std::move(adj_list) }
 {
-    // A small, static graph is better for testing
-    // Deal with file parsing latter
-
-    return std::make_unique<Graph>();
 }
 
 
-Graph::Graph()
-    : m_adj_list{}
-{
-    VertexProperties vertices[] = {
-        {0, "A", Point(0, 0)},
-        {1, "B", Point(0, 0)},
-        {2, "C", Point(0, 0)},
-        {3, "D", Point(0, 0)},
-        {4, "E", Point(0, 0)}
-    };
-
-    for (std::size_t i = 0; i < sizeof(vertices) / sizeof(*vertices); ++i)
-        add_vertex(vertices[i], m_adj_list);
-
-    add_edge(0, 2, EdgeProperties(1), m_adj_list);
-    add_edge(2, 1, EdgeProperties(7), m_adj_list);
-    add_edge(2, 3, EdgeProperties(3), m_adj_list);
-    add_edge(3, 4, EdgeProperties(1), m_adj_list);
-    add_edge(4, 0, EdgeProperties(1), m_adj_list);
-    add_edge(4, 1, EdgeProperties(1), m_adj_list);
-    add_edge(1, 4, EdgeProperties(2), m_adj_list);
-    add_edge(1, 3, EdgeProperties(1), m_adj_list);
-}
-
-
-void Graph::compute_vertex_coords(int width, int height)
-{
-    square_topology<> topo(1.0);
-    auto pmap = get(&VertexProperties::coords, m_adj_list);
-    random_graph_layout(m_adj_list, pmap, topo);
-
-    typename graph_traits<AdjList>::vertex_iterator vi, vend;
-
-    for (boost::tie(vi, vend) = vertices(m_adj_list); vi != vend; ++vi)
-    {
-        m_adj_list[*vi].coords.x *= width;
-        m_adj_list[*vi].coords.y *= height;
-    }
-}
-
-
-std::size_t Graph::num_vertices()
+std::size_t Graph::num_vertices() const
 {
     return boost::num_vertices(m_adj_list);
 }
 
 
-bool Graph::plot_path(Graph::vertex_t src,
-                      Graph::vertex_t tgt,
-                      std::vector<Graph::vertex_t>& path)
+double Graph::plot_path(const Graph::vertex_t& src,
+                        const Graph::vertex_t& tgt,
+                        std::vector<Graph::vertex_t>& path)
 {
     std::vector<vertex_t> predecessors(num_vertices());
-    std::vector<int> distances(num_vertices());
+
+    for (std::size_t i = 0; i < predecessors.size(); ++i)
+        predecessors[i] = static_cast<vertex_t>(i);
+
+    std::vector<double> distances(num_vertices());
+
 
     dijkstra_shortest_paths(m_adj_list, src,
         predecessor_map(make_iterator_property_map(
@@ -78,35 +41,37 @@ bool Graph::plot_path(Graph::vertex_t src,
             distances.begin(), get(vertex_index, m_adj_list)))
         .weight_map(get(&EdgeProperties::weight, m_adj_list)));
 
+    if (distances[tgt] == std::numeric_limits<double>::max())
+        return std::numeric_limits<double>::max();
+
     auto current_vertex = tgt;
-    do
+    while (current_vertex != src)
     {
         path.push_back(current_vertex);
         current_vertex = predecessors[current_vertex];
     }
-    while (current_vertex != src);
 
     path.push_back(src);
 
-    return true;
+    return distances[tgt];
 }
 
 
-Graph::vertex_t Graph::get_edge_source(Graph::edge_t edge)
+Graph::vertex_t Graph::get_edge_source(const Graph::edge_t& edge)
 {
     return source(edge, m_adj_list);
 }
 
 
-Graph::vertex_t Graph::get_edge_target(Graph::edge_t edge)
+Graph::vertex_t Graph::get_edge_target(const Graph::edge_t& edge)
 {
     return target(edge, m_adj_list);
 }
 
 
-Graph::Point& Graph::get_vertex_coords(Graph::vertex_t vertex)
+Graph::Point Graph::get_vertex_coords(const Graph::vertex_t& vertex)
 {
-    return m_adj_list[vertex].coords;
+    return {m_adj_list[vertex].x_coord, m_adj_list[vertex].y_coord};
 }
 
 

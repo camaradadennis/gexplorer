@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include <memory>
+#include <tuple>
 #include <vector>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topology.hpp>
@@ -10,33 +11,22 @@
 class Graph final
 {
 public:
-    struct Point
-    {
-        double x;
-        double y;
-
-        Point& operator=(const boost::square_topology<>::point_type p)
-        {
-            this->x = p[0];
-            this->y = p[1];
-            return *this;
-        }
-    };
-
     struct VertexProperties
     {
         std::size_t id;
-        std::string name;
-        Point coords;
+        double x_coord;
+        double y_coord;
     };
 
     struct EdgeProperties
     {
+        std::string name;
         std::size_t weight;
+        bool oneway;
     };
 
     typedef boost::adjacency_list<
-        boost::listS, boost::vecS, boost::undirectedS,
+        boost::listS, boost::vecS, boost::directedS,
         VertexProperties, EdgeProperties
     > AdjList;
 
@@ -44,27 +34,22 @@ public:
     using edge_t = boost::graph_traits<AdjList>::edge_descriptor;
     using vertex_iterator = boost::graph_traits<AdjList>::vertex_iterator;
     using edge_iterator = boost::graph_traits<AdjList>::edge_iterator;
+    using Point = std::pair<double, double>;
 
-    static std::unique_ptr<Graph> from(const char*);
+    Graph() = default;
+    ~Graph() = default;
 
-    Graph();
+    Graph(AdjList&&);
 
-    void compute_vertex_coords(int, int);
-    std::size_t num_vertices();
+    //void compute_vertex_coords(int, int);
+    std::size_t num_vertices() const;
 
-    bool plot_path(vertex_t, vertex_t, std::vector<vertex_t>&);
+    double plot_path(const vertex_t&, const vertex_t&, std::vector<vertex_t>&);
 
-    bool is_selected(edge_t);
-    bool is_selected(vertex_t);
-    void set_selected(edge_t);
-    void set_selected(vertex_t);
-    void add_selected(edge_t);
-    void add_selected(vertex_t);
+    vertex_t get_edge_source(const edge_t&);
+    vertex_t get_edge_target(const edge_t&);
 
-    vertex_t get_edge_source(edge_t);
-    vertex_t get_edge_target(edge_t);
-
-    Point& get_vertex_coords(vertex_t);
+    Point get_vertex_coords(const vertex_t&);
 
     vertex_iterator vertex_begin();
     vertex_iterator vertex_end();
@@ -74,8 +59,6 @@ public:
 
 private:
     AdjList m_adj_list;
-    std::vector<vertex_t> m_selected_v;
-    std::vector<edge_t> m_selected_e;
 };
 
 #endif // GRAPH_H

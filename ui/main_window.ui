@@ -31,6 +31,8 @@
         <property name='hexpand'>true</property>
         <property name='start-child'>
           <object class='GtkDrawingArea' id='graph-area'>
+            <property name='content-width'>800</property>
+            <property name='content-height'>600</property>
           </object>
         </property>
         <property name='end-child'>
@@ -38,7 +40,7 @@
             <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
             <property name='spacing'>10</property>
             <child>
-              <object class='GtkSearchEntry' id='search-bar'>
+              <object class='GtkEntry' id='search-bar'>
                 <property name='placeholder-text'>Type a vertex id...</property>
               </object>
             </child>

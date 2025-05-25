@@ -5,7 +5,9 @@
 
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/builder.h>
+#include <gtkmm/entry.h>
 #include <gtkmm/filedialog.h>
+
 
 class GraphDrawingArea;
 
@@ -20,10 +22,10 @@ private:
     void on_file_selection(const Glib::RefPtr<Gio::AsyncResult>&,
                            const Glib::RefPtr<Gtk::FileDialog>&);
 
-    void load_file_contents(const Glib::RefPtr<Gio::AsyncResult>&,
-                            const Glib::RefPtr<Gio::File>&);
+    void on_search_activate();
 
     GraphDrawingArea* m_graph_area;
+    Gtk::Entry* m_search_bar;
 };
 
 #endif // MAIN_WINDOW_H
