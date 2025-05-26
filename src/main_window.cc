@@ -75,20 +75,17 @@ void MainWindow::on_file_selection(
 
         std::string fpath = file->get_path();
 
-        try
-        {
-            auto g = parse_osm(fpath);
-            m_graph_area->set_graph(std::move(g));
-        }
-        catch (...)
-        {
-            auto alert = Gtk::AlertDialog::create();
-            alert->set_message(
-                "Could not parse file. Make sure it is in a proper "
-                "OSM XML format.");
+        auto g{ osm_parser::parse(fpath) };
+        m_graph_area->set_graph(std::move(g));
+    }
+    catch (const osm_parser::ParserError& err)
+    {
+        auto alert = Gtk::AlertDialog::create();
+        alert->set_message(
+            "Could not parse file. Make sure it is in a proper "
+            "OSM XML format.");
 
-            alert->show(*this);
-        }
+        alert->show(*this);
     }
     catch (const Gtk::DialogError& err)
     {

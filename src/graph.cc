@@ -1,7 +1,6 @@
 #include "graph.h"
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/graph/random_layout.hpp>
 
 #include <limits>           // for numeric_limits<>::max()
 #include <utility>          // for move()
@@ -32,7 +31,6 @@ double Graph::plot_path(const Graph::vertex_t& src,
         predecessors[i] = static_cast<vertex_t>(i);
 
     std::vector<double> distances(num_vertices());
-
 
     dijkstra_shortest_paths(m_adj_list, src,
         predecessor_map(make_iterator_property_map(
@@ -74,6 +72,10 @@ Graph::Point Graph::get_vertex_coords(const Graph::vertex_t& vertex)
     return {m_adj_list[vertex].x_coord, m_adj_list[vertex].y_coord};
 }
 
+std::size_t Graph::get_vertex_id(const Graph::vertex_t& vertex) const
+{
+    return m_adj_list[vertex].id;
+}
 
 Graph::vertex_iterator Graph::vertex_begin()
 {

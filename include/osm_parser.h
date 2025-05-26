@@ -4,7 +4,18 @@
 #include "graph.h"
 
 #include <string>
+#include <stdexcept>
 
-std::unique_ptr<Graph> parse_osm(const std::string&);
+namespace osm_parser
+{
+    std::unique_ptr<Graph> parse(const std::string&);
+
+    class ParserError: public std::runtime_error
+    {
+    public:
+        explicit ParserError(const std::string& what)
+            : std::runtime_error(what) {}
+    };
+}
 
 #endif // OSM_PARSER_H

@@ -1,5 +1,6 @@
 #include "osm_parser.h"
 
+#include <boost/property_tree/exceptions.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -72,7 +73,7 @@ static inline bool is_visible(const pt::ptree& el)
 }
 
 
-std::unique_ptr<Graph> parse_osm(const std::string& filename)
+static std::unique_ptr<Graph> _parse_internal (const std::string& filename)
 {
     pt::ptree tree;
     pt::read_xml(filename, tree);
@@ -206,4 +207,23 @@ std::unique_ptr<Graph> parse_osm(const std::string& filename)
     }
 
     return std::make_unique<Graph>(std::move(adjacency_list));
+}
+
+
+std::unique_ptr<Graph> osm_parser::parse(const std::string& filename)
+{
+    std::unique_ptr<Graph> g;
+
+    try
+    {
+        g = _parse_internal(filename);
+    }
+    catch (const pt::ptree_error& err)
+    {
+        throw ParserError(
+            std::string("could not parse xml file: ").append(err.what())
+        );
+    }
+
+    return g;
 }

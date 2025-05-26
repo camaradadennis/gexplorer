@@ -1,11 +1,11 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <memory>
-#include <tuple>
-#include <vector>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topology.hpp>
+
+#include <utility>      // for pair
+#include <vector>
 
 
 class Graph final
@@ -41,8 +41,8 @@ public:
 
     Graph(AdjList&&);
 
-    //void compute_vertex_coords(int, int);
     std::size_t num_vertices() const;
+    std::size_t get_vertex_id(const Graph::vertex_t&) const;
 
     double plot_path(const vertex_t&, const vertex_t&, std::vector<vertex_t>&);
 

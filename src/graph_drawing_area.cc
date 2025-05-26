@@ -3,7 +3,6 @@
 #include <gtkmm/eventcontrollerscroll.h>
 #include <gtkmm/gesturedrag.h>
 
-#include <algorithm>
 #include <limits>           // for numeric_limits<>::max()
 #include <utility>          // for move()
 
@@ -53,6 +52,8 @@ void GraphDrawingArea::on_gesture_pressed(int n_press, double x, double y)
     const double translated_x = (x - m_offset_x) / m_scale_factor;
     const double translated_y = (y - m_offset_y) / m_scale_factor;
 
+    std::cout << "\n(x,   y) = (" << x << ", " << y << ")" << std::endl;
+
     for (auto iter = m_graph->vertex_begin(); iter != m_graph->vertex_end(); ++iter)
     {
         const auto point = m_graph->get_vertex_coords(*iter);
@@ -63,6 +64,9 @@ void GraphDrawingArea::on_gesture_pressed(int n_press, double x, double y)
             && translated_y >= point.second - VERTEX_PIXEL_RADIUS
         )
         {
+            std::cout << "\nSelected vertex (" << m_graph->get_vertex_id(*iter)
+                      << ")" << std::endl;
+
             switch (m_click_gesture->get_current_button())
             {
                 case GDK_BUTTON_PRIMARY:
@@ -121,12 +125,18 @@ void GraphDrawingArea::set_tgt_vertex(Graph::vertex_t vertex)
         m_graph->plot_path(m_src_tgt.first, m_src_tgt.second, m_path);
 
     if (distance == std::numeric_limits<double>::max())
-        std::cout << "No path between "<< m_src_tgt.first
-                  << " and " << m_src_tgt.second << std::endl;
+        std::cout << "\nNo path between \""
+                  << m_graph->get_vertex_id(m_src_tgt.first)
+                  << "\" and \""
+                  << m_graph->get_vertex_id(m_src_tgt.second)
+                  << std::endl;
     else
-        std::cout << "Distance between " << m_src_tgt.first
-                  << " and " << m_src_tgt.second
-                  << " is " << distance << " meters" << std::endl;
+        std::cout << "\nDistance between \""
+                  << m_graph->get_vertex_id(m_src_tgt.first)
+                  << "\" and \""
+                  << m_graph->get_vertex_id(m_src_tgt.second)
+                  << " is " << distance << " meters"
+                  << std::endl;
 }
 
 

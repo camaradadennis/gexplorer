@@ -7,16 +7,14 @@
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/gestureclick.h>
 
-#include <memory> // for std::unique_ptr
-#include <vector> // for std::vector
+#include <memory>    // for unique_ptr
+#include <utility>   // for pair
+#include <vector>
 
 
 class GraphDrawingArea final: public Gtk::DrawingArea
 {
 public:
-    using Edge = std::pair<int, int>;
-    using Position = std::pair<int, int>;
-
     GraphDrawingArea(BaseObjectType*, const Glib::RefPtr<Gtk::Builder>&);
 
     void set_graph(std::unique_ptr<Graph>);
@@ -32,6 +30,7 @@ private:
     bool on_gesture_scroll(double, double);
 
     std::unique_ptr<Graph> m_graph{ nullptr };
+
     double m_scale_factor{ 1.0 };
     double m_offset_x{ 0.0 };
     double m_offset_y{ 0.0 };
