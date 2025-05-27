@@ -25,8 +25,9 @@ private:
     void set_src_vertex(Graph::vertex_t);
     void set_tgt_vertex(Graph::vertex_t);
 
-    void on_gesture_pressed(int, double, double);
+    void on_gesture_drag_begin(double, double);
     void on_gesture_drag_update(double, double);
+    void on_gesture_pressed(int, double, double);
     bool on_gesture_scroll(double, double);
 
     std::unique_ptr<Graph> m_graph{ nullptr };
@@ -34,6 +35,8 @@ private:
     double m_scale_factor{ 1.0 };
     double m_offset_x{ 0.0 };
     double m_offset_y{ 0.0 };
+    double m_drag_start_x{ 0.0 };
+    double m_drag_start_y{ 0.0 };
 
     Glib::RefPtr<Gtk::GestureClick> m_click_gesture;
     std::pair<Graph::vertex_t, Graph::vertex_t> m_src_tgt;

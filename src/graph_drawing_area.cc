@@ -24,6 +24,8 @@ GraphDrawingArea::GraphDrawingArea(BaseObjectType* cobject,
     add_controller(m_click_gesture);
 
     auto drag_gesture = Gtk::GestureDrag::create();
+    drag_gesture->signal_drag_begin().connect(
+        sigc::mem_fun(*this, &GraphDrawingArea::on_gesture_drag_begin));
     drag_gesture->signal_drag_update().connect(
         sigc::mem_fun(*this, &GraphDrawingArea::on_gesture_drag_update));
     add_controller(drag_gesture);
@@ -36,10 +38,17 @@ GraphDrawingArea::GraphDrawingArea(BaseObjectType* cobject,
 }
 
 
+void GraphDrawingArea::on_gesture_drag_begin(double x, double y)
+{
+    m_drag_start_x = m_offset_x;
+    m_drag_start_y = m_offset_y;
+}
+
+
 void GraphDrawingArea::on_gesture_drag_update(double offset_x, double offset_y)
 {
-    m_offset_x = offset_x;
-    m_offset_y = offset_y;
+    m_offset_x = m_drag_start_x + offset_x;
+    m_offset_y = m_drag_start_y + offset_y;
     queue_draw();
 }
 
