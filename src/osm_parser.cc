@@ -44,7 +44,7 @@ namespace
 
     double project_lat(double lat)
     {
-        return (lat - center_lat) * METERS_PER_DEGREE_LAT;
+        return (center_lat - lat) * METERS_PER_DEGREE_LAT;
     }
 
     double vertex_distance(const Vertex& a, const Vertex& b)
