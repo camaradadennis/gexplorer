@@ -67,10 +67,11 @@ void MainWindow::on_plot_btn_clicked()
 
     if (src_id && tgt_id)
     {
-        m_graph_area->set_src_vertex_id(*src_id);
-        m_graph_area->set_tgt_vertex_id(*tgt_id);
-
-        m_graph_area->queue_draw();
+        if (m_graph_area->set_src_vertex_id(*src_id) &&
+            m_graph_area->set_tgt_vertex_id(*tgt_id))
+            {
+                m_graph_area->queue_draw();
+            }
     }
 }
 
