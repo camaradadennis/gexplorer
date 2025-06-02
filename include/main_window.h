@@ -2,6 +2,7 @@
 #define MAIN_WINDOW_H
 
 #include "graph_drawing_area.h"
+#include "infofield.h"
 #include "searchfield.h"
 
 #include <gtkmm/applicationwindow.h>
@@ -24,9 +25,12 @@ private:
     void on_file_selection(const Glib::RefPtr<Gio::AsyncResult>&,
                            const Glib::RefPtr<Gtk::FileDialog>&);
 
+    void on_selection_changed();
+
     GraphDrawingArea* m_graph_area;
     SearchField* m_src_field;
     SearchField* m_tgt_field;
+    InfoField* m_info_field;
 
     Gtk::Button* m_plot_btn;
 };

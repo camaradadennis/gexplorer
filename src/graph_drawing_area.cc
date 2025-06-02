@@ -109,17 +109,23 @@ void GraphDrawingArea::set_graph(std::unique_ptr<Graph> graph)
 {
     m_src_vertex = {};
     m_tgt_vertex = {};
+    m_path_distance = {};
     m_path.clear();
 
     m_graph = std::move(graph);
     queue_draw();
+
+    m_signal_changed_selection.emit();
 }
 
 
 void GraphDrawingArea::set_src_vertex(const Graph::VertexT& vertex)
 {
     m_tgt_vertex = {};
+    m_path_distance = {};
     m_src_vertex = vertex;
+
+    m_signal_changed_selection.emit();
 }
 
 
@@ -141,13 +147,12 @@ bool GraphDrawingArea::set_src_vertex_id(std::size_t id)
 
 void GraphDrawingArea::set_tgt_vertex(const Graph::VertexT& vertex)
 {
-    m_tgt_vertex = vertex;
     m_path.clear();
-
-    double distance =
+    m_tgt_vertex = vertex;
+    m_path_distance =
         m_graph->plot_path(*m_src_vertex, *m_tgt_vertex, m_path);
 
-    std::cout << distance << std::endl;
+    m_signal_changed_selection.emit();
 }
 
 
@@ -164,6 +169,46 @@ bool GraphDrawingArea::set_tgt_vertex_id(std::size_t id)
     set_tgt_vertex(*vi);
 
     return true;
+}
+
+
+std::optional<std::size_t> GraphDrawingArea::get_src_vertex_id() const
+{
+    if (m_src_vertex)
+        return m_graph->get_vertex_id(*m_src_vertex);
+    else
+        return {};
+}
+
+
+std::optional<std::size_t> GraphDrawingArea::get_tgt_vertex_id() const
+{
+    if (m_tgt_vertex)
+        return m_graph->get_vertex_id(*m_tgt_vertex);
+    else
+        return {};
+}
+
+
+std::optional<double> GraphDrawingArea::get_num_vertices() const
+{
+    if (m_graph)
+        return m_graph->num_vertices();
+    else
+        return std::nullopt;
+}
+
+
+std::optional<double> GraphDrawingArea::get_path_distance() const
+{
+    return m_path_distance;
+}
+
+
+GraphDrawingArea::SignalChangedSelection
+GraphDrawingArea::signal_changed_selection()
+{
+    return m_signal_changed_selection;
 }
 
 

@@ -23,6 +23,7 @@ resources = gnome.compile_resources(
 cpp_sources = files(
     'src/graph.cc',
     'src/graph_drawing_area.cc',
+    'src/infofield.cc',
     'src/main.cc',
     'src/main_window.cc',
     'src/osm_parser.cc',

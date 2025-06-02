@@ -63,7 +63,50 @@
               </object>
             </child>
             <child>
-              <object class='GtkTextView' id='information' />
+              <object class='GtkBox' id='info-field'>
+                <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
+                <property name='spacing'>5</property>
+                <child>
+                  <object class='GtkFrame'>
+                    <property name='label'>Number of vertices</property>
+                    <property name='child'>
+                      <object class='GtkLabel' id='num-vertices'>
+                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class='GtkFrame'>
+                    <property name='label'>Source vertex id</property>
+                    <property name='child'>
+                      <object class='GtkLabel' id='selected-src'>
+                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class='GtkFrame'>
+                    <property name='label'>Target vertex id</property>
+                    <property name='child'>
+                      <object class='GtkLabel' id='selected-tgt'>
+                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class='GtkFrame'>
+                    <property name='label'>Distance traveled (m)</property>
+                    <property name='child'>
+                      <object class='GtkLabel' id='path-distance'>
+                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
             </child>
           </object>
         </property>

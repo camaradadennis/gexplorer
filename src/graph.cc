@@ -51,6 +51,12 @@ Graph::get_vertex_coords(const Graph::VertexT& vertex) const
 }
 
 
+std::size_t Graph::get_vertex_id(const Graph::VertexT& vertex) const
+{
+    return m_adj_list[vertex].id;
+}
+
+
 std::vector<std::size_t> Graph::get_vertex_id_list() const
 {
     std::vector<std::size_t> vec;

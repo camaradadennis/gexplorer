@@ -22,6 +22,9 @@ MainWindow::MainWindow(BaseObjectType* cobject,
     if (!m_graph_area)
         THROW_INVALID_ID("graph-area");
 
+    m_graph_area->signal_changed_selection().connect(
+        sigc::mem_fun(*this, &MainWindow::on_selection_changed));
+
     auto menu_builder = Gtk::Builder::create_from_resource(
         "/io/github/camaradadennis/gexplorer/menu.ui");
 
@@ -48,6 +51,11 @@ MainWindow::MainWindow(BaseObjectType* cobject,
         THROW_INVALID_ID("target-field");
 
     m_tgt_field->set_placeholder_text("Target Vertex");
+
+    m_info_field = Gtk::Builder::get_widget_derived<InfoField>(
+        builder, "info-field");
+    if (!m_info_field)
+        THROW_INVALID_ID("info-field");
 
     m_plot_btn = builder->get_widget<Gtk::Button>("plot-btn");
     if (!m_plot_btn)
@@ -121,4 +129,13 @@ void MainWindow::on_file_selection(
         if (err.code() != Gtk::DialogError::DISMISSED)
             throw err;
     }
+}
+
+
+void MainWindow::on_selection_changed()
+{
+    m_info_field->set_num(m_graph_area->get_num_vertices());
+    m_info_field->set_source(m_graph_area->get_src_vertex_id());
+    m_info_field->set_target(m_graph_area->get_tgt_vertex_id());
+    m_info_field->set_distance(m_graph_area->get_path_distance());
 }

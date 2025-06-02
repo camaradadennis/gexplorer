@@ -52,6 +52,7 @@ public:
     const EdgeProperties& get_edge_properties(const EdgeT&) const;
 
     const VertexCoords& get_vertex_coords(const VertexT&) const;
+    std::size_t get_vertex_id(const VertexT&) const;
     std::vector<std::size_t> get_vertex_id_list() const;
 
     double plot_path(const VertexT&, const VertexT&, std::vector<VertexT>&) const;
