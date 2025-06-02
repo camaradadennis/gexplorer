@@ -6,6 +6,7 @@
 #include <gtkmm/error.h>
 #include <gtkmm/menubutton.h>
 
+#include <iostream>
 
 #define THROW_INVALID_ID(id) \
     { throw Gtk::BuilderError(Gtk::BuilderError::INVALID_ID, \
@@ -14,42 +15,63 @@
 
 MainWindow::MainWindow(BaseObjectType* cobject,
                        const Glib::RefPtr<Gtk::Builder>& builder)
-    : Gtk::ApplicationWindow(cobject),
-    m_graph_area{
-        Gtk::Builder::get_widget_derived<GraphDrawingArea>(builder, "graph-area")
-    }
+: Gtk::ApplicationWindow(cobject)
 {
+    m_graph_area = Gtk::Builder::get_widget_derived<GraphDrawingArea>(
+        builder, "graph-area");
     if (!m_graph_area)
-        THROW_INVALID_ID("graph_area");
+        THROW_INVALID_ID("graph-area");
 
     auto menu_builder = Gtk::Builder::create_from_resource(
         "/io/github/camaradadennis/gexplorer/menu.ui");
 
     auto menu_model = std::dynamic_pointer_cast<Gio::MenuModel>(
         menu_builder->get_object("menu"));
-
     if (!menu_model)
         THROW_INVALID_ID("menu");
 
     auto menu_btn = builder->get_widget<Gtk::MenuButton>("menu-btn");
-
     if (!menu_btn)
         THROW_INVALID_ID("menu-btn");
-
     menu_btn->set_menu_model(menu_model);
 
-    add_action("load", sigc::mem_fun(*this, &MainWindow::open_file_dialog));
+    m_src_field = Gtk::Builder::get_widget_derived<SearchField>(
+        builder, "source-field");
+    if (!m_src_field)
+        THROW_INVALID_ID("source-field");
 
-    m_search_bar = builder->get_widget<Gtk::Entry>("search-bar");
-    m_search_bar->signal_activate().connect(
-        sigc::mem_fun(*this, &MainWindow::on_search_activate));
+    m_src_field->set_placeholder_text("Source Vertex");
+
+    m_tgt_field = Gtk::Builder::get_widget_derived<SearchField>(
+        builder, "target-field");
+    if (!m_tgt_field)
+        THROW_INVALID_ID("target-field");
+
+    m_tgt_field->set_placeholder_text("Target Vertex");
+
+    m_plot_btn = builder->get_widget<Gtk::Button>("plot-btn");
+    if (!m_plot_btn)
+        THROW_INVALID_ID("plot-btn");
+
+    m_plot_btn->signal_clicked().connect(
+        sigc::mem_fun(*this, &MainWindow::on_plot_btn_clicked));
+
+    add_action("load", sigc::mem_fun(*this, &MainWindow::open_file_dialog));
 }
 
 
-void MainWindow::on_search_activate()
+void MainWindow::on_plot_btn_clicked()
 {
-    auto buffer = m_search_bar->get_buffer();
-    auto text = buffer->get_text();
+    auto src_id = m_src_field->get_selected();
+    auto tgt_id = m_tgt_field->get_selected();
+
+    if (src_id && tgt_id)
+    {
+        m_graph_area->set_src_vertex_id(*src_id);
+        m_graph_area->set_tgt_vertex_id(*tgt_id);
+
+        m_graph_area->queue_draw();
+    }
 }
 
 
@@ -76,6 +98,12 @@ void MainWindow::on_file_selection(
         std::string fpath = file->get_path();
 
         auto g{ osm_parser::parse(fpath) };
+
+        auto vertex_list{ g->get_vertex_id_list() };
+
+        m_src_field->set_data(vertex_list);
+        m_tgt_field->set_data(vertex_list);
+
         m_graph_area->set_graph(std::move(g));
     }
     catch (const osm_parser::ParserError& err)

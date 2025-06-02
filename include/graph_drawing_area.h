@@ -7,6 +7,7 @@
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/gestureclick.h>
 
+#include <optional>
 #include <memory>    // for unique_ptr
 #include <utility>   // for pair
 #include <vector>
@@ -18,19 +19,18 @@ public:
     GraphDrawingArea(BaseObjectType*, const Glib::RefPtr<Gtk::Builder>&);
 
     void set_graph(std::unique_ptr<Graph>);
+    bool set_src_vertex_id(std::size_t);
+    bool set_tgt_vertex_id(std::size_t);
 
 private:
     void on_draw(const Cairo::RefPtr<Cairo::Context>&, int, int);
-
-    void set_src_vertex(Graph::vertex_t);
-    void set_tgt_vertex(Graph::vertex_t);
 
     void on_gesture_drag_begin(double, double);
     void on_gesture_drag_update(double, double);
     void on_gesture_pressed(int, double, double);
     bool on_gesture_scroll(double, double);
 
-    std::unique_ptr<Graph> m_graph{ nullptr };
+    Glib::RefPtr<Gtk::GestureClick> m_click_gesture;
 
     double m_scale_factor{ 1.0 };
     double m_offset_x{ 0.0 };
@@ -38,10 +38,13 @@ private:
     double m_drag_start_x{ 0.0 };
     double m_drag_start_y{ 0.0 };
 
-    Glib::RefPtr<Gtk::GestureClick> m_click_gesture;
-    std::pair<Graph::vertex_t, Graph::vertex_t> m_src_tgt;
-    std::vector<Graph::vertex_t> m_path;
-    bool m_path_set{false};
+    void set_src_vertex(const Graph::VertexT&);
+    void set_tgt_vertex(const Graph::VertexT&);
+
+    std::unique_ptr<Graph> m_graph{ nullptr };
+    std::optional<Graph::VertexT> m_src_vertex{};
+    std::optional<Graph::VertexT> m_tgt_vertex{};
+    std::vector<Graph::VertexT> m_path;
 };
 
 #endif // GRAPH_DRAWING_AREA_H

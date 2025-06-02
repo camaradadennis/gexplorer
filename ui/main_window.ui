@@ -40,8 +40,26 @@
             <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
             <property name='spacing'>10</property>
             <child>
-              <object class='GtkEntry' id='search-bar'>
-                <property name='placeholder-text'>Type a vertex id...</property>
+              <object class='GtkBox'>
+                <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
+                <property name='spacing'>30</property>
+                <child>
+                  <object class='GtkBox' id='source-field'>
+                    <property name='margin-top'>10</property>
+                  </object>
+                </child>
+                <child>
+                  <object class='GtkBox' id='target-field'>
+                  </object>
+                </child>
+                <child>
+                  <object class='GtkButton' id='plot-btn'>
+                    <property name='label'>Plot Course!</property>
+                    <property name='width-request'>25</property>
+                    <property name='hexpand'>false</property>
+                    <property name='halign'>GTK_ALIGN_CENTER</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>

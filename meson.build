@@ -26,6 +26,7 @@ cpp_sources = files(
     'src/main.cc',
     'src/main_window.cc',
     'src/osm_parser.cc',
+    'src/searchfield.cc',
 )
 
 executable(

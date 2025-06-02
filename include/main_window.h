@@ -2,10 +2,11 @@
 #define MAIN_WINDOW_H
 
 #include "graph_drawing_area.h"
+#include "searchfield.h"
 
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/builder.h>
-#include <gtkmm/entry.h>
+#include <gtkmm/button.h>
 #include <gtkmm/filedialog.h>
 
 
@@ -17,15 +18,17 @@ public:
     MainWindow(BaseObjectType*, const Glib::RefPtr<Gtk::Builder>&);
 
 private:
+    void on_plot_btn_clicked();
     void open_file_dialog();
 
     void on_file_selection(const Glib::RefPtr<Gio::AsyncResult>&,
                            const Glib::RefPtr<Gtk::FileDialog>&);
 
-    void on_search_activate();
-
     GraphDrawingArea* m_graph_area;
-    Gtk::Entry* m_search_bar;
+    SearchField* m_src_field;
+    SearchField* m_tgt_field;
+
+    Gtk::Button* m_plot_btn;
 };
 
 #endif // MAIN_WINDOW_H

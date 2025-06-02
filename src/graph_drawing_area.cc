@@ -61,28 +61,23 @@ void GraphDrawingArea::on_gesture_pressed(int n_press, double x, double y)
     const double translated_x = (x - m_offset_x) / m_scale_factor;
     const double translated_y = (y - m_offset_y) / m_scale_factor;
 
-    std::cout << "\n(x,   y) = (" << x << ", " << y << ")" << std::endl;
-
-    for (auto iter = m_graph->vertex_begin(); iter != m_graph->vertex_end(); ++iter)
+    for (auto [vi, vend] = m_graph->iter_vertices(); vi != vend; ++vi)
     {
-        const auto point = m_graph->get_vertex_coords(*iter);
+        auto point = m_graph->get_vertex_coords(*vi);
 
-        if (   translated_x <= point.first + VERTEX_PIXEL_RADIUS
-            && translated_x >= point.first - VERTEX_PIXEL_RADIUS
-            && translated_y <= point.second + VERTEX_PIXEL_RADIUS
-            && translated_y >= point.second - VERTEX_PIXEL_RADIUS
+        if (   translated_x <= point.x + VERTEX_PIXEL_RADIUS
+            && translated_x >= point.x - VERTEX_PIXEL_RADIUS
+            && translated_y <= point.y + VERTEX_PIXEL_RADIUS
+            && translated_y >= point.y - VERTEX_PIXEL_RADIUS
         )
         {
-            std::cout << "\nSelected vertex (" << m_graph->get_vertex_id(*iter)
-                      << ")" << std::endl;
-
             switch (m_click_gesture->get_current_button())
             {
                 case GDK_BUTTON_PRIMARY:
-                    this->set_src_vertex(*iter);
+                    this->set_src_vertex(*vi);
                     break;
                 case GDK_BUTTON_SECONDARY:
-                    this->set_tgt_vertex(*iter);
+                    this->set_tgt_vertex(*vi);
                     break;
             }
             break;
@@ -112,46 +107,72 @@ bool GraphDrawingArea::on_gesture_scroll(double dx, double dy)
 
 void GraphDrawingArea::set_graph(std::unique_ptr<Graph> graph)
 {
+    m_src_vertex = {};
+    m_tgt_vertex = {};
+    m_path.clear();
+
     m_graph = std::move(graph);
     queue_draw();
 }
 
 
-void GraphDrawingArea::set_src_vertex(Graph::vertex_t vertex)
+void GraphDrawingArea::set_src_vertex(const Graph::VertexT& vertex)
 {
-    m_path_set = false;
-    m_path.clear();
-    m_src_tgt.first = vertex;
+    m_tgt_vertex = {};
+    m_src_vertex = vertex;
 }
 
 
-void GraphDrawingArea::set_tgt_vertex(Graph::vertex_t vertex)
+bool GraphDrawingArea::set_src_vertex_id(std::size_t id)
 {
-    m_path_set = true;
-    m_src_tgt.second = vertex;
-    m_path.clear();
-    double distance =
-        m_graph->plot_path(m_src_tgt.first, m_src_tgt.second, m_path);
+    if (!m_graph)
+        return false;
 
-    if (distance == std::numeric_limits<double>::max())
-        std::cout << "\nNo path between \""
-                  << m_graph->get_vertex_id(m_src_tgt.first)
-                  << "\" and \""
-                  << m_graph->get_vertex_id(m_src_tgt.second)
-                  << std::endl;
-    else
-        std::cout << "\nDistance between \""
-                  << m_graph->get_vertex_id(m_src_tgt.first)
-                  << "\" and \""
-                  << m_graph->get_vertex_id(m_src_tgt.second)
-                  << " is " << distance << " meters"
-                  << std::endl;
+    auto [vi, vend] = m_graph->find_vertex_id(id);
+
+    if (vi == vend)
+        return false;
+
+    set_src_vertex(*vi);
+
+    return true;
+}
+
+
+void GraphDrawingArea::set_tgt_vertex(const Graph::VertexT& vertex)
+{
+    m_tgt_vertex = vertex;
+    m_path.clear();
+
+    double distance =
+        m_graph->plot_path(*m_src_vertex, *m_tgt_vertex, m_path);
+
+    std::cout << distance << std::endl;
+}
+
+
+bool GraphDrawingArea::set_tgt_vertex_id(std::size_t id)
+{
+    if (!m_graph)
+        return false;
+
+    auto [vi, vend] = m_graph->find_vertex_id(id);
+
+    if (vi == vend)
+        return false;
+
+    set_tgt_vertex(*vi);
+
+    return true;
 }
 
 
 void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
                                int width, int height)
 {
+    cr->rectangle(0, 0, width, height);
+    cr->clip();
+
     cr->set_source_rgb(1.0, 1.0, 1.0);
     cr->paint();
 
@@ -163,52 +184,55 @@ void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
 
     cr->set_source_rgb(0.0, 0.0, 0.0);
 
-    for (auto iter = m_graph->edge_begin(); iter != m_graph->edge_end(); ++iter)
+    for (auto [vi, vend] = m_graph->iter_edges(); vi != vend; ++vi)
     {
-        const auto source = m_graph->get_edge_source(*iter);
-        const auto target = m_graph->get_edge_target(*iter);
+        auto source = m_graph->get_edge_src(*vi);
+        auto target = m_graph->get_edge_tgt(*vi);
 
-        const auto src_coords = m_graph->get_vertex_coords(source);
-        const auto tgt_coords = m_graph->get_vertex_coords(target);
+        auto src_coords = m_graph->get_vertex_coords(source);
+        auto tgt_coords = m_graph->get_vertex_coords(target);
 
-        cr->move_to(src_coords.first, src_coords.second);
-        cr->line_to(tgt_coords.first, tgt_coords.second);
+        cr->move_to(src_coords.x, src_coords.y);
+        cr->line_to(tgt_coords.x, tgt_coords.y);
 
         cr->stroke();
     }
 
     cr->set_source_rgb(0.4, 0.4, 0.4);
 
-    for (auto iter = m_graph->vertex_begin(); iter != m_graph->vertex_end(); ++iter)
+    for (auto [vi, vend] = m_graph->iter_vertices(); vi != vend; ++vi)
     {
-        const auto point = m_graph->get_vertex_coords(*iter);
-        cr->arc(point.first, point.second, VERTEX_PIXEL_RADIUS, 0.0, 2 * M_PI);
+        auto point = m_graph->get_vertex_coords(*vi);
+        cr->arc(point.x, point.y, VERTEX_PIXEL_RADIUS, 0.0, 2 * M_PI);
 
         cr->fill();
     }
 
     cr->set_source_rgb(0.8, 0.0, 0.0);
 
-    const auto point = m_graph->get_vertex_coords(m_src_tgt.first);
-    cr->arc(point.first, point.second, VERTEX_PIXEL_RADIUS, 0.0, 2 * M_PI);
-    cr->fill();
-
-    if (m_path_set)
+    if (m_src_vertex)
     {
-        const auto point = m_graph->get_vertex_coords(m_src_tgt.second);
-        cr->move_to(point.first, point.second);
+        auto point = m_graph->get_vertex_coords(*m_src_vertex);
+        cr->arc(point.x, point.y, VERTEX_PIXEL_RADIUS, 0.0, 2 * M_PI);
+        cr->fill();
+    }
 
-        for (auto iter = m_path.begin(); iter != m_path.end(); ++iter)
+    if (m_tgt_vertex)
+    {
+        auto point = m_graph->get_vertex_coords(*m_tgt_vertex);
+        cr->move_to(point.x, point.y);
+
+        for (const auto& vd: m_path)
         {
-            const auto point = m_graph->get_vertex_coords(*iter);
+            auto point = m_graph->get_vertex_coords(vd);
 
-            cr->line_to(point.first, point.second);
+            cr->line_to(point.x, point.y);
             cr->stroke();
 
-            cr->arc(point.first, point.second, VERTEX_PIXEL_RADIUS, 0.0, 2 * M_PI);
+            cr->arc(point.x, point.y, VERTEX_PIXEL_RADIUS, 0.0, 2 * M_PI);
             cr->fill();
 
-            cr->move_to(point.first, point.second);
+            cr->move_to(point.x, point.y);
         }
     }
 }

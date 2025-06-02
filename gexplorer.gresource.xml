@@ -3,5 +3,6 @@
   <gresource prefix='/io/github/camaradadennis/gexplorer'>
     <file preprocess='xml-stripblanks'>main_window.ui</file>
     <file preprocess='xml-stripblanks'>menu.ui</file>
+    <file preprocess='xml-stripblanks'>search_field.ui</file>
   </gresource>
 </gresources>

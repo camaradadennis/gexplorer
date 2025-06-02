@@ -8,14 +8,12 @@
 #include <cmath>            // for cos(), sqrt() and pow()
 #include <map>
 #include <memory>           // for unique_ptr
-#include <string>
 #include <utility>          // for move()
 #include <vector>
 
 
 using Vertex = Graph::VertexProperties;
 using Edge = Graph::EdgeProperties;
-using AdjList = Graph::AdjList;
 
 typedef std::map<std::size_t, Vertex> NodeMap;
 
@@ -50,8 +48,8 @@ namespace
     double vertex_distance(const Vertex& a, const Vertex& b)
     {
         return std::sqrt(
-            std::pow(a.x_coord - b.x_coord, 2)
-            + std::pow(a.y_coord - b.y_coord, 2)
+            std::pow(a.coord.x - b.coord.x, 2)
+            + std::pow(a.coord.y - b.coord.y, 2)
         );
     }
 
@@ -73,7 +71,7 @@ static inline bool is_visible(const pt::ptree& el)
 }
 
 
-static std::unique_ptr<Graph> _parse_internal (const std::string& filename)
+static std::unique_ptr<Graph> parse_internal(const std::string& filename)
 {
     pt::ptree tree;
     pt::read_xml(filename, tree);
@@ -98,14 +96,14 @@ static std::unique_ptr<Graph> _parse_internal (const std::string& filename)
         Vertex vertex;
 
         vertex.id = node.get<std::size_t>("<xmlattr>.id");
-        vertex.x_coord = project_lon(node.get<double>("<xmlattr>.lon"));
-        vertex.y_coord = project_lat(node.get<double>("<xmlattr>.lat"));
+        vertex.coord.x = project_lon(node.get<double>("<xmlattr>.lon"));
+        vertex.coord.y = project_lat(node.get<double>("<xmlattr>.lat"));
 
         node_map.insert({vertex.id, vertex});
     }
 
     std::map<std::size_t, std::size_t> nodeid_to_vd;
-    AdjList adjacency_list;
+    auto graph{ std::make_unique<Graph>() };
 
     for (boost::tie(element, element_end) = root.equal_range("way");
          element != element_end;
@@ -180,8 +178,8 @@ static std::unique_ptr<Graph> _parse_internal (const std::string& filename)
 
             if (!nodeid_to_vd.contains(src_nodeid))
             {
-                // Vertex is not yet added to adjacency_list
-                src_vd = boost::add_vertex(src, adjacency_list);
+                // Vertex is not yet added to graph
+                src_vd = graph->add_vertex(src);
                 nodeid_to_vd[src_nodeid] = src_vd;
             }
             else
@@ -189,7 +187,7 @@ static std::unique_ptr<Graph> _parse_internal (const std::string& filename)
 
             if (!nodeid_to_vd.contains(tgt_nodeid))
             {
-                tgt_vd = boost::add_vertex(tgt, adjacency_list);
+                tgt_vd = graph->add_vertex(tgt);
                 nodeid_to_vd[tgt_nodeid] = tgt_vd;
             }
             else
@@ -197,26 +195,30 @@ static std::unique_ptr<Graph> _parse_internal (const std::string& filename)
 
             edge.weight = vertex_distance(src, tgt);
 
-            boost::add_edge(src_vd, tgt_vd, edge, adjacency_list);
+            if (!graph->add_edge(src_vd, tgt_vd, edge))
+            {
+                // If we get here, it means that somehow edge could not be added
+                throw osm_parser::ParserError("error adding edges to graph");
+            }
 
             // Graph is directed. If we have a two-way path between vertices,
             // then we must add another inverted edge.
-            if (!edge.oneway)
-                boost::add_edge(tgt_vd, src_vd, edge, adjacency_list);
+            if (!edge.oneway && !graph->add_edge(tgt_vd, src_vd, edge))
+                throw osm_parser::ParserError("error adding edges to graph");
         }
     }
 
-    return std::make_unique<Graph>(std::move(adjacency_list));
+    return graph;
 }
 
 
 std::unique_ptr<Graph> osm_parser::parse(const std::string& filename)
 {
-    std::unique_ptr<Graph> g;
+    std::unique_ptr<Graph> g{ nullptr };
 
     try
     {
-        g = _parse_internal(filename);
+        g = parse_internal(filename);
     }
     catch (const pt::ptree_error& err)
     {

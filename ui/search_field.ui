@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<interface>
+  <requires lib='gtk' version='4.10' />
+  <object class='GtkBox' id='container'>
+    <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
+    <property name='spacing'>0</property>
+    <property name='margin-start'>5</property>
+    <property name='margin-end'>5</property>
+    <property name='hexpand'>true</property>
+    <child>
+      <object class='GtkSearchEntry' id='entry' />
+    </child>
+    <child>
+      <object class='GtkScrolledWindow'>
+        <property name='vexpand'>false</property>
+        <property name='height-request'>100</property>
+        <property name='child'>
+          <object class='GtkListView' id='view'>
+            <!--<property name='single-click-activate'>true</property>-->
+            <property name='factory'>
+              <object class='GtkBuilderListItemFactory'>
+                <property name='bytes'><![CDATA[
+                  <interface>
+                    <template class='GtkListItem'>
+                      <property name='activatable'>false</property>
+                      <property name='child'>
+                        <object class='GtkLabel'>
+                          <binding name='label'>
+                            <lookup name='string' type='GtkStringObject'>
+                              <lookup name='item'>GtkListItem</lookup>
+                            </lookup>
+                          </binding>
+                        </object>
+                      </property>
+                    </template>
+                  </interface>
+                ]]></property>
+              </object>
+            </property>
+            <property name='model'>
+              <object class='GtkSingleSelection' id='selector'>
+                <property name='model'>
+                  <object class='GtkSortListModel'>
+                    <property name='sorter'>
+                      <object class='GtkStringSorter' id='sorter'>
+                        <property name='expression'>
+                          <lookup name='string' type='GtkStringObject' />
+                        </property>
+                      </object>
+                    </property>
+                    <property name='model'>
+                      <object class='GtkFilterListModel'>
+                        <property name='filter'>
+                          <object class='GtkStringFilter' id='filter'>
+                            <property name='match-mode'>GTK_STRING_FILTER_MATCH_MODE_PREFIX</property>
+                            <property name='expression'>
+                              <lookup name='string' type='GtkStringObject' />
+                            </property>
+                            <binding name='search'>
+                              <lookup name='text' type='GtkSearchEntry'>entry</lookup>
+                            </binding>
+                          </object>
+                        </property>
+                        <property name='model'>
+                          <object class='GtkStringList' id='list' />
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+    </child>
+  </object>
+</interface>

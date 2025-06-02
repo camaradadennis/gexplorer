@@ -3,15 +3,24 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
 #include <limits>           // for numeric_limits<>::max()
-#include <utility>          // for move()
-#include <vector>
-
-using namespace boost;
 
 
-Graph::Graph(Graph::AdjList&& adj_list)
-    : m_adj_list{ std::move(adj_list) }
+Graph::VertexT Graph::add_vertex(const Graph::VertexProperties& vertex)
 {
+    return boost::add_vertex(vertex, m_adj_list);
+}
+
+
+std::optional<Graph::EdgeT> Graph::add_edge(const Graph::VertexT& src,
+                                            const Graph::VertexT& tgt,
+                                            const Graph::EdgeProperties& edge)
+{
+    auto [descriptor, success] = boost::add_edge(src, tgt, edge, m_adj_list);
+
+    if (success)
+        return descriptor;
+    else
+        return std::nullopt;
 }
 
 
@@ -21,22 +30,55 @@ std::size_t Graph::num_vertices() const
 }
 
 
-double Graph::plot_path(const Graph::vertex_t& src,
-                        const Graph::vertex_t& tgt,
-                        std::vector<Graph::vertex_t>& path)
+const Graph::VertexProperties&
+Graph::get_vertex_properties(const Graph::VertexT& vertex) const
 {
-    std::vector<vertex_t> predecessors(num_vertices());
+    return m_adj_list[vertex];
+}
+
+
+const Graph::EdgeProperties&
+Graph::get_edge_properties(const Graph::EdgeT& edge) const
+{
+    return m_adj_list[edge];
+}
+
+
+const Graph::VertexCoords&
+Graph::get_vertex_coords(const Graph::VertexT& vertex) const
+{
+    return m_adj_list[vertex].coord;
+}
+
+
+std::vector<std::size_t> Graph::get_vertex_id_list() const
+{
+    std::vector<std::size_t> vec;
+    vec.reserve(boost::num_vertices(m_adj_list));
+
+    for (auto [vi, vend] = boost::vertices(m_adj_list); vi != vend; ++vi)
+        vec.push_back(m_adj_list[*vi].id);
+
+    return vec;
+}
+
+
+double Graph::plot_path(const Graph::VertexT& src,
+                        const Graph::VertexT& tgt,
+                        std::vector<Graph::VertexT>& path) const
+{
+    std::vector<VertexT> predecessors(num_vertices());
 
     for (std::size_t i = 0; i < predecessors.size(); ++i)
-        predecessors[i] = static_cast<vertex_t>(i);
+        predecessors[i] = static_cast<VertexT>(i);
 
     std::vector<double> distances(num_vertices());
 
-    dijkstra_shortest_paths(m_adj_list, src,
-        predecessor_map(make_iterator_property_map(
-            predecessors.begin(), get(vertex_index, m_adj_list)))
-        .distance_map(make_iterator_property_map(
-            distances.begin(), get(vertex_index, m_adj_list)))
+    boost::dijkstra_shortest_paths(m_adj_list, src,
+        predecessor_map(boost::make_iterator_property_map(
+            predecessors.begin(), get(boost::vertex_index, m_adj_list)))
+        .distance_map(boost::make_iterator_property_map(
+            distances.begin(), get(boost::vertex_index, m_adj_list)))
         .weight_map(get(&EdgeProperties::weight, m_adj_list)));
 
     if (distances[tgt] == std::numeric_limits<double>::max())
@@ -55,55 +97,49 @@ double Graph::plot_path(const Graph::vertex_t& src,
 }
 
 
-Graph::vertex_t Graph::get_edge_source(const Graph::edge_t& edge)
+Graph::VertexT Graph::get_edge_src(const Graph::EdgeT& edge) const
 {
-    return source(edge, m_adj_list);
+    return boost::source(edge, m_adj_list);
 }
 
 
-Graph::vertex_t Graph::get_edge_target(const Graph::edge_t& edge)
+Graph::VertexT Graph::get_edge_tgt(const Graph::EdgeT& edge) const
 {
-    return target(edge, m_adj_list);
+    return boost::target(edge, m_adj_list);
 }
 
 
-Graph::Point Graph::get_vertex_coords(const Graph::vertex_t& vertex)
+std::pair<Graph::VertexIter, Graph::VertexIter> Graph::iter_vertices() const
 {
-    return {m_adj_list[vertex].x_coord, m_adj_list[vertex].y_coord};
-}
-
-std::size_t Graph::get_vertex_id(const Graph::vertex_t& vertex) const
-{
-    return m_adj_list[vertex].id;
-}
-
-Graph::vertex_iterator Graph::vertex_begin()
-{
-    vertex_iterator start, end;
-    boost::tie(start, end) = vertices(m_adj_list);
-    return start;
+    return boost::vertices(m_adj_list);
 }
 
 
-Graph::vertex_iterator Graph::vertex_end()
+std::pair<Graph::EdgeIter, Graph::EdgeIter> Graph::iter_edges() const
 {
-    vertex_iterator start, end;
-    boost::tie(start, end) = vertices(m_adj_list);
-    return end;
+    return boost::edges(m_adj_list);
 }
 
 
-Graph::edge_iterator Graph::edge_begin()
+std::pair<Graph::VertexIter, Graph::VertexIter>
+Graph::find_vertex_id(std::size_t id) const
 {
-    edge_iterator start, end;
-    boost::tie(start, end) = edges(m_adj_list);
-    return start;
+    auto [vi, vend] = boost::vertices(m_adj_list);
+
+    while (vi != vend && m_adj_list[*vi].id != id)
+        ++vi;
+
+    return { vi, vend };
 }
 
 
-Graph::edge_iterator Graph::edge_end()
+std::pair<Graph::EdgeIter, Graph::EdgeIter>
+Graph::find_edge_name(const std::string& name) const
 {
-    edge_iterator start, end;
-    boost::tie(start, end) = edges(m_adj_list);
-    return end;
+    auto [vi, vend] = boost::edges(m_adj_list);
+
+    while (vi != vend && m_adj_list[*vi].name != name)
+        ++vi;
+
+    return { vi, vend };
 }

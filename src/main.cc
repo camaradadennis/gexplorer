@@ -27,6 +27,9 @@ namespace {
 
 int main(int argc, char* argv[])
 {
+    // See: https://gnome.pages.gitlab.gnome.org/gtkmm/classGtk_1_1Application.html#ab8afbd8e83c870d14e6a6545e56e26b3
+    Gtk::Application::wrap_in_search_entry2();
+
     app = Gtk::Application::create("io.github.camaradadennis.gexplorer");
     app->signal_activate().connect([] () { on_app_activate(); });
     return app->run();
