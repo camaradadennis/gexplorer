@@ -3,10 +3,9 @@
 #include "main_window.h"
 
 #include <gtkmm/alertdialog.h>
+#include <gtkmm/button.h>
 #include <gtkmm/error.h>
-#include <gtkmm/menubutton.h>
 
-#include <iostream>
 
 #define THROW_INVALID_ID(id) \
     { throw Gtk::BuilderError(Gtk::BuilderError::INVALID_ID, \
@@ -25,18 +24,12 @@ MainWindow::MainWindow(BaseObjectType* cobject,
     m_graph_area->signal_changed_selection().connect(
         sigc::mem_fun(*this, &MainWindow::on_selection_changed));
 
-    auto menu_builder = Gtk::Builder::create_from_resource(
-        "/io/github/camaradadennis/gexplorer/menu.ui");
+    auto button_open = builder->get_widget<Gtk::Button>("button-open");
+    if (!button_open)
+        THROW_INVALID_ID("button-open");
 
-    auto menu_model = std::dynamic_pointer_cast<Gio::MenuModel>(
-        menu_builder->get_object("menu"));
-    if (!menu_model)
-        THROW_INVALID_ID("menu");
-
-    auto menu_btn = builder->get_widget<Gtk::MenuButton>("menu-btn");
-    if (!menu_btn)
-        THROW_INVALID_ID("menu-btn");
-    menu_btn->set_menu_model(menu_model);
+    button_open->signal_clicked().connect(
+        sigc::mem_fun(*this, &MainWindow::open_file_dialog));
 
     m_src_field = Gtk::Builder::get_widget_derived<SearchField>(
         builder, "source-field");
@@ -57,14 +50,12 @@ MainWindow::MainWindow(BaseObjectType* cobject,
     if (!m_info_field)
         THROW_INVALID_ID("info-field");
 
-    m_plot_btn = builder->get_widget<Gtk::Button>("plot-btn");
-    if (!m_plot_btn)
-        THROW_INVALID_ID("plot-btn");
+    auto button_plot = builder->get_widget<Gtk::Button>("button-plot");
+    if (!button_plot)
+        THROW_INVALID_ID("button-plot");
 
-    m_plot_btn->signal_clicked().connect(
+    button_plot->signal_clicked().connect(
         sigc::mem_fun(*this, &MainWindow::on_plot_btn_clicked));
-
-    add_action("load", sigc::mem_fun(*this, &MainWindow::open_file_dialog));
 }
 
 

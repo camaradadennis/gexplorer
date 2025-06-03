@@ -7,7 +7,6 @@
 
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/builder.h>
-#include <gtkmm/button.h>
 #include <gtkmm/filedialog.h>
 
 
@@ -31,8 +30,6 @@ private:
     SearchField* m_src_field;
     SearchField* m_tgt_field;
     InfoField* m_info_field;
-
-    Gtk::Button* m_plot_btn;
 };
 
 #endif // MAIN_WINDOW_H

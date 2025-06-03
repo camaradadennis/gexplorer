@@ -8,10 +8,8 @@
     <property name='titlebar'>
       <object class='GtkHeaderBar' id='header'>
         <child type='start'>
-          <object class='GtkMenuButton' id='menu-btn'>
-            <property name='label'>Menu</property>
-            <property name='has-frame'>true</property>
-            <property name='direction'>GTK_ARROW_DOWN</property>
+          <object class='GtkButton' id='button-open'>
+            <property name='icon-name'>document-open</property>
           </object>
         </child>
         <child type='title'>
@@ -53,7 +51,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class='GtkButton' id='plot-btn'>
+                  <object class='GtkButton' id='button-plot'>
                     <property name='label'>Plot Course!</property>
                     <property name='width-request'>25</property>
                     <property name='hexpand'>false</property>

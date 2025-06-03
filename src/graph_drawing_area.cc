@@ -6,8 +6,6 @@
 #include <limits>           // for numeric_limits<>::max()
 #include <utility>          // for move()
 
-#include <iostream>         // just for testing
-
 #define VERTEX_PIXEL_RADIUS 5.0
 
 
