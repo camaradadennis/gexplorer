@@ -27,7 +27,7 @@ public:
     struct EdgeProperties
     {
         std::string name;
-        std::size_t weight;
+        double weight;
         bool oneway;
     };
 

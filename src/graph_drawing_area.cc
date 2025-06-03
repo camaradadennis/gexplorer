@@ -190,7 +190,7 @@ std::optional<std::size_t> GraphDrawingArea::get_tgt_vertex_id() const
 }
 
 
-std::optional<double> GraphDrawingArea::get_num_vertices() const
+std::optional<std::size_t> GraphDrawingArea::get_num_vertices() const
 {
     if (m_graph)
         return m_graph->num_vertices();

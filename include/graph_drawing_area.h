@@ -26,7 +26,7 @@ public:
 
     std::optional<std::size_t> get_src_vertex_id() const;
     std::optional<std::size_t> get_tgt_vertex_id() const;
-    std::optional<double> get_num_vertices() const;
+    std::optional<std::size_t> get_num_vertices() const;
     std::optional<double> get_path_distance() const;
 
     SignalChangedSelection signal_changed_selection();
