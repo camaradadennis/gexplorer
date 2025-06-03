@@ -68,9 +68,19 @@
                 <property name='spacing'>5</property>
                 <child>
                   <object class='GtkFrame'>
-                    <property name='label'>Number of vertices</property>
+                    <property name='label'>Number of vertices on map</property>
                     <property name='child'>
                       <object class='GtkLabel' id='num-vertices'>
+                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class='GtkFrame'>
+                    <property name='label'>Number of vertices on path</property>
+                    <property name='child'>
+                      <object class='GtkLabel' id='num-path'>
                         <property name='justify'>GTK_JUSTIFY_CENTER</property>
                       </object>
                     </property>

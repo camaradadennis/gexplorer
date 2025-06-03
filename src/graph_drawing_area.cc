@@ -121,6 +121,7 @@ void GraphDrawingArea::set_graph(std::unique_ptr<Graph> graph)
 
 void GraphDrawingArea::set_src_vertex(const Graph::VertexT& vertex)
 {
+    m_path.clear();
     m_tgt_vertex = {};
     m_path_distance = {};
     m_src_vertex = vertex;
@@ -195,7 +196,16 @@ std::optional<std::size_t> GraphDrawingArea::get_num_vertices() const
     if (m_graph)
         return m_graph->num_vertices();
     else
-        return std::nullopt;
+        return {};
+}
+
+
+std::optional<std::size_t> GraphDrawingArea::get_num_on_path() const
+{
+    if (!m_path.empty())
+        return m_path.size();
+    else
+        return {};
 }
 
 

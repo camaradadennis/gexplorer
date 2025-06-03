@@ -135,6 +135,7 @@ void MainWindow::on_file_selection(
 void MainWindow::on_selection_changed()
 {
     m_info_field->set_num(m_graph_area->get_num_vertices());
+    m_info_field->set_num_path(m_graph_area->get_num_on_path());
     m_info_field->set_source(m_graph_area->get_src_vertex_id());
     m_info_field->set_target(m_graph_area->get_tgt_vertex_id());
     m_info_field->set_distance(m_graph_area->get_path_distance());

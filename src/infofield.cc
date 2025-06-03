@@ -15,6 +15,10 @@ InfoField::InfoField(BaseObjectType* cobject,
     if (!m_num)
         THROW_INVALID_ID("num-vertices");
 
+    m_num_path = builder->get_widget<Gtk::Label>("num-path");
+    if (!m_num_path)
+        THROW_INVALID_ID("num-path");
+
     m_src = builder->get_widget<Gtk::Label>("selected-src");
     if (!m_num)
         THROW_INVALID_ID("selected-src");
@@ -28,6 +32,7 @@ InfoField::InfoField(BaseObjectType* cobject,
         THROW_INVALID_ID("path-distance");
 
     set_num();
+    set_num_path();
     set_source();
     set_target();
     set_distance();
@@ -40,6 +45,15 @@ void InfoField::set_num(std::optional<std::size_t> num)
         m_num->set_label(std::to_string(*num));
     else
         m_num->set_label("-");
+}
+
+
+void InfoField::set_num_path(std::optional<std::size_t> num)
+{
+    if (num)
+        m_num_path->set_label(std::to_string(*num));
+    else
+        m_num_path->set_label("-");
 }
 
 
