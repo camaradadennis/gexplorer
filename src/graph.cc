@@ -5,6 +5,11 @@
 #include <limits>           // for numeric_limits<>::max()
 
 
+std::unique_ptr<Graph> Graph::create()
+{
+    return std::make_unique<Graph>();
+}
+
 Graph::VertexT Graph::add_vertex(const Graph::VertexProperties& vertex)
 {
     return boost::add_vertex(vertex, m_adj_list);

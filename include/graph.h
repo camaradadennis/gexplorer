@@ -3,6 +3,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 
+#include <memory>       // for unique_ptr
 #include <optional>
 #include <string>
 #include <utility>      // for pair
@@ -40,6 +41,7 @@ public:
     using VertexIter = boost::graph_traits<AdjList>::vertex_iterator;
     using EdgeIter = boost::graph_traits<AdjList>::edge_iterator;
 
+    static std::unique_ptr<Graph> create();
 
     VertexT add_vertex(const VertexProperties&);
 

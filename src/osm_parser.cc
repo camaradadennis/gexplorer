@@ -103,7 +103,7 @@ static std::unique_ptr<Graph> parse_internal(const std::string& filename)
     }
 
     std::map<std::size_t, std::size_t> nodeid_to_vd;
-    auto graph{ std::make_unique<Graph>() };
+    auto graph{ Graph::create() };
 
     for (boost::tie(element, element_end) = root.equal_range("way");
          element != element_end;
