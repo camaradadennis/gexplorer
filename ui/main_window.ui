@@ -8,8 +8,27 @@
     <property name='titlebar'>
       <object class='GtkHeaderBar' id='header'>
         <child type='start'>
-          <object class='GtkButton' id='button-open'>
-            <property name='icon-name'>document-open</property>
+          <object class='GtkBox'>
+            <property name='orientation'>GTK_ORIENTATION_HORIZONTAL</property>
+            <property name='spacing'>1</property>
+            <child>
+              <object class='GtkButton' id='button-new'>
+                <property name='icon-name'>document-new</property>
+                <property name='tooltip-text'>New blank graph</property>
+              </object>
+            </child>
+            <child>
+              <object class='GtkButton' id='button-open'>
+                <property name='icon-name'>document-open</property>
+                <property name='tooltip-text'>Open graph</property>
+              </object>
+            </child>
+            <child>
+              <object class='GtkButton' id='button-save'>
+                <property name='icon-name'>document-save</property>
+                <property name='tooltip-text'>Save graph</property>
+              </object>
+            </child>
           </object>
         </child>
         <child type='title'>
@@ -39,23 +58,19 @@
             <property name='spacing'>10</property>
             <child>
               <object class='GtkBox'>
-                <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
-                <property name='spacing'>30</property>
+                <property name='orientation'>GTK_ORIENTATION_HORIZONTAL</property>
+                <property name='spacing'>1</property>
+                <property name='margin-top'>10</property>
                 <child>
-                  <object class='GtkBox' id='source-field'>
-                    <property name='margin-top'>10</property>
+                  <object class='GtkCheckButton' id='toggle-edit'>
+                    <property name='label'>Edit mode</property>
+                    <property name='tooltip-text'>Toggle edit mode</property>
                   </object>
                 </child>
                 <child>
-                  <object class='GtkBox' id='target-field'>
-                  </object>
-                </child>
-                <child>
-                  <object class='GtkButton' id='button-plot'>
-                    <property name='label'>Plot Course!</property>
-                    <property name='width-request'>25</property>
-                    <property name='hexpand'>false</property>
-                    <property name='halign'>GTK_ALIGN_CENTER</property>
+                  <object class='GtkCheckButton' id='toggle-view'>
+                    <property name='label'>View arrows</property>
+                    <property name='tooltip-text'>View edge directions</property>
                   </object>
                 </child>
               </object>
@@ -114,6 +129,31 @@
                     </property>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class='GtkExpander'>
+                <property name='label'>Search controls</property>
+                <property name='child'>
+                  <object class='GtkBox'>
+                    <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
+                    <property name='spacing'>30</property>
+                    <child>
+                      <object class='GtkBox' id='source-field' />
+                    </child>
+                    <child>
+                      <object class='GtkBox' id='target-field' />
+                    </child>
+                    <child>
+                      <object class='GtkButton' id='button-plot'>
+                        <property name='label'>Plot Course!</property>
+                        <property name='width-request'>25</property>
+                        <property name='hexpand'>false</property>
+                        <property name='halign'>GTK_ALIGN_CENTER</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
               </object>
             </child>
           </object>
