@@ -1,4 +1,5 @@
 #include "osm_parser.h"
+#include "graph.h"
 #include "graph_drawing_area.h"
 #include "main_window.h"
 
@@ -23,6 +24,14 @@ MainWindow::MainWindow(BaseObjectType* cobject,
 
     m_graph_area->signal_changed_selection().connect(
         sigc::mem_fun(*this, &MainWindow::on_selection_changed));
+
+    auto button_new = builder->get_widget<Gtk::Button>("button-new");
+    if (!button_new)
+        THROW_INVALID_ID("button-new");
+
+    button_new->signal_clicked().connect([this] () {
+        this->m_graph_area->set_graph( Graph::create() );
+    });
 
     auto button_open = builder->get_widget<Gtk::Button>("button-open");
     if (!button_open)

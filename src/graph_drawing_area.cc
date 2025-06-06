@@ -223,14 +223,14 @@ GraphDrawingArea::signal_changed_selection()
 void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
                                int width, int height)
 {
+    if (!m_graph)
+        return;
+
     cr->rectangle(0, 0, width, height);
     cr->clip();
 
     cr->set_source_rgb(1.0, 1.0, 1.0);
     cr->paint();
-
-    if (!m_graph)
-        return;
 
     cr->translate(m_offset_x, m_offset_y);
     cr->scale(m_scale_factor, m_scale_factor);
