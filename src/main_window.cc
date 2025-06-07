@@ -40,6 +40,14 @@ MainWindow::MainWindow(BaseObjectType* cobject,
     button_open->signal_clicked().connect(
         sigc::mem_fun(*this, &MainWindow::open_file_dialog));
 
+    m_toggle_edit = builder->get_widget<Gtk::CheckButton>("toggle-edit");
+    if (!m_toggle_edit)
+        THROW_INVALID_ID("toggle-edit");
+
+    m_toggle_edit->signal_toggled().connect([this] () {
+        this->m_graph_area->set_editable(this->m_toggle_edit->get_active());
+    });
+
     m_src_field = Gtk::Builder::get_widget_derived<SearchField>(
         builder, "source-field");
     if (!m_src_field)

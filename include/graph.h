@@ -44,6 +44,7 @@ public:
     static std::unique_ptr<Graph> create();
 
     VertexT add_vertex(const VertexProperties&);
+    void remove_vertex(const VertexT&);
 
     std::optional<EdgeT> add_edge(const VertexT&, const VertexT&,
                                   const EdgeProperties&);
@@ -65,6 +66,7 @@ public:
     std::pair<VertexIter, VertexIter> iter_vertices() const;
     std::pair<EdgeIter, EdgeIter> iter_edges() const;
 
+    std::optional<VertexT> find_vertex_with_coords(double, double, double) const;
     std::pair<VertexIter, VertexIter> find_vertex_id(std::size_t) const;
     std::pair<EdgeIter, EdgeIter> find_edge_name(const std::string&) const;
 

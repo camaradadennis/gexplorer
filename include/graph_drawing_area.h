@@ -23,6 +23,7 @@ public:
     void set_graph(std::unique_ptr<Graph>);
     bool set_src_vertex_id(std::size_t);
     bool set_tgt_vertex_id(std::size_t);
+    void set_editable(bool);
 
     std::optional<std::size_t> get_src_vertex_id() const;
     std::optional<std::size_t> get_tgt_vertex_id() const;
@@ -35,12 +36,13 @@ public:
 private:
     void on_draw(const Cairo::RefPtr<Cairo::Context>&, int, int);
 
-    void on_gesture_drag_begin(double, double);
-    void on_gesture_drag_update(double, double);
-    void on_gesture_pressed(int, double, double);
-    bool on_gesture_scroll(double, double);
+    void on_drag_begin(double, double);
+    void on_drag_update(double, double);
+    void on_click(int, double, double, Glib::RefPtr<Gtk::GestureClick>&);
+    bool on_scroll(double, double);
+    bool on_key_pressed(guint, guint, Gdk::ModifierType);
 
-    Glib::RefPtr<Gtk::GestureClick> m_click_gesture;
+    bool m_editable{ false };
 
     double m_scale_factor{ 1.0 };
     double m_offset_x{ 0.0 };

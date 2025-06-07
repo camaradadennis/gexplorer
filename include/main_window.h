@@ -7,6 +7,7 @@
 
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/builder.h>
+#include <gtkmm/checkbutton.h>
 #include <gtkmm/filedialog.h>
 
 
@@ -30,6 +31,8 @@ private:
     SearchField* m_src_field;
     SearchField* m_tgt_field;
     InfoField* m_info_field;
+
+    Gtk::CheckButton* m_toggle_edit;
 };
 
 #endif // MAIN_WINDOW_H

@@ -16,6 +16,13 @@ Graph::VertexT Graph::add_vertex(const Graph::VertexProperties& vertex)
 }
 
 
+void Graph::remove_vertex(const Graph::VertexT& vertex)
+{
+    boost::clear_vertex(vertex, m_adj_list);
+    boost::remove_vertex(vertex, m_adj_list);
+}
+
+
 std::optional<Graph::EdgeT> Graph::add_edge(const Graph::VertexT& src,
                                             const Graph::VertexT& tgt,
                                             const Graph::EdgeProperties& edge)
@@ -129,6 +136,26 @@ std::pair<Graph::VertexIter, Graph::VertexIter> Graph::iter_vertices() const
 std::pair<Graph::EdgeIter, Graph::EdgeIter> Graph::iter_edges() const
 {
     return boost::edges(m_adj_list);
+}
+
+
+std::optional<Graph::VertexT>
+Graph::find_vertex_with_coords(double x, double y, double margin) const
+{
+    for (auto [vi, vend] = boost::vertices(m_adj_list); vi != vend; ++vi)
+    {
+        const auto& point = m_adj_list[*vi].coord;
+
+        if (x <= point.x + margin &&
+            x >= point.x - margin &&
+            y <= point.y + margin &&
+            y >= point.y - margin)
+        {
+            return *vi;
+        }
+    }
+
+    return {};
 }
 
 
