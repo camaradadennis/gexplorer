@@ -53,109 +53,113 @@
           </object>
         </property>
         <property name='end-child'>
-          <object class='GtkBox'>
-            <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
-            <property name='spacing'>10</property>
-            <child>
+          <object class='GtkScrolledWindow'>
+            <property name='child'>
               <object class='GtkBox'>
-                <property name='orientation'>GTK_ORIENTATION_HORIZONTAL</property>
-                <property name='spacing'>1</property>
-                <property name='margin-top'>10</property>
-                <child>
-                  <object class='GtkCheckButton' id='toggle-edit'>
-                    <property name='label'>Edit mode</property>
-                    <property name='tooltip-text'>Toggle edit mode</property>
-                  </object>
-                </child>
-                <child>
-                  <object class='GtkCheckButton' id='toggle-view'>
-                    <property name='label'>View arrows</property>
-                    <property name='tooltip-text'>View edge directions</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class='GtkBox' id='info-field'>
                 <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
-                <property name='spacing'>5</property>
+                <property name='spacing'>10</property>
                 <child>
-                  <object class='GtkFrame'>
-                    <property name='label'>Number of vertices on map</property>
-                    <property name='child'>
-                      <object class='GtkLabel' id='num-vertices'>
-                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class='GtkFrame'>
-                    <property name='label'>Number of vertices on path</property>
-                    <property name='child'>
-                      <object class='GtkLabel' id='num-path'>
-                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class='GtkFrame'>
-                    <property name='label'>Source vertex id</property>
-                    <property name='child'>
-                      <object class='GtkLabel' id='selected-src'>
-                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class='GtkFrame'>
-                    <property name='label'>Target vertex id</property>
-                    <property name='child'>
-                      <object class='GtkLabel' id='selected-tgt'>
-                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class='GtkFrame'>
-                    <property name='label'>Distance traveled (m)</property>
-                    <property name='child'>
-                      <object class='GtkLabel' id='path-distance'>
-                        <property name='justify'>GTK_JUSTIFY_CENTER</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class='GtkExpander'>
-                <property name='label'>Search controls</property>
-                <property name='child'>
                   <object class='GtkBox'>
-                    <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
-                    <property name='spacing'>30</property>
+                    <property name='orientation'>GTK_ORIENTATION_HORIZONTAL</property>
+                    <property name='spacing'>1</property>
+                    <property name='margin-top'>10</property>
                     <child>
-                      <object class='GtkBox' id='source-field' />
+                      <object class='GtkCheckButton' id='toggle-edit'>
+                        <property name='label'>Edit mode</property>
+                        <property name='tooltip-text'>Toggle edit mode</property>
+                      </object>
                     </child>
                     <child>
-                      <object class='GtkBox' id='target-field' />
-                    </child>
-                    <child>
-                      <object class='GtkButton' id='button-plot'>
-                        <property name='label'>Plot Course!</property>
-                        <property name='width-request'>25</property>
-                        <property name='hexpand'>false</property>
-                        <property name='halign'>GTK_ALIGN_CENTER</property>
+                      <object class='GtkCheckButton' id='toggle-view'>
+                        <property name='label'>View arrows</property>
+                        <property name='tooltip-text'>View edge directions</property>
                       </object>
                     </child>
                   </object>
-                </property>
+                </child>
+                <child>
+                  <object class='GtkBox' id='info-field'>
+                    <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
+                    <property name='spacing'>5</property>
+                    <child>
+                      <object class='GtkFrame'>
+                        <property name='label'>Number of vertices on map</property>
+                        <property name='child'>
+                          <object class='GtkLabel' id='num-vertices'>
+                            <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class='GtkFrame'>
+                        <property name='label'>Number of vertices on path</property>
+                        <property name='child'>
+                          <object class='GtkLabel' id='num-path'>
+                            <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class='GtkFrame'>
+                        <property name='label'>Source vertex id</property>
+                        <property name='child'>
+                          <object class='GtkLabel' id='selected-src'>
+                            <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class='GtkFrame'>
+                        <property name='label'>Target vertex id</property>
+                        <property name='child'>
+                          <object class='GtkLabel' id='selected-tgt'>
+                            <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class='GtkFrame'>
+                        <property name='label'>Distance traveled (m)</property>
+                        <property name='child'>
+                          <object class='GtkLabel' id='path-distance'>
+                            <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class='GtkExpander'>
+                    <property name='label'>Search controls</property>
+                    <property name='child'>
+                      <object class='GtkBox'>
+                        <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
+                        <property name='spacing'>30</property>
+                        <child>
+                          <object class='GtkBox' id='source-field' />
+                        </child>
+                        <child>
+                          <object class='GtkBox' id='target-field' />
+                        </child>
+                        <child>
+                          <object class='GtkButton' id='button-plot'>
+                            <property name='label'>Plot Course!</property>
+                            <property name='width-request'>25</property>
+                            <property name='hexpand'>false</property>
+                            <property name='halign'>GTK_ALIGN_CENTER</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
               </object>
-            </child>
+            </property>
           </object>
         </property>
       </object>
