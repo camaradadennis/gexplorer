@@ -4,9 +4,9 @@
 #include <gtkmm/eventcontrollerkey.h>
 #include <gtkmm/gesturedrag.h>
 
-#include <cmath>            // for sqrt() and pow()
-#include <limits>           // for numeric_limits<>::max()
-#include <utility>          // for move()
+#include <cmath>       // for sqrt(), pow(), min(), max(), abs()
+#include <limits>      // for numeric_limits<>::max(), numeric_limits<>::min()
+#include <utility>     // for move()
 
 #define VERTEX_PIXEL_RADIUS 5.0
 
@@ -75,8 +75,8 @@ void GraphDrawingArea::on_click(
 
     grab_focus();
 
-    const double translated_x = (x - m_offset_x) / m_scale_factor;
-    const double translated_y = (y - m_offset_y) / m_scale_factor;
+    const double translated_x = (x / m_scale_factor) - m_offset_x;
+    const double translated_y = (y / m_scale_factor) - m_offset_y;
 
     auto selected = m_graph->find_vertex_with_coords(
         translated_x, translated_y, VERTEX_PIXEL_RADIUS);
@@ -173,9 +173,59 @@ void GraphDrawingArea::set_graph(std::unique_ptr<Graph> graph)
     m_path.clear();
 
     m_graph = std::move(graph);
+
     queue_draw();
 
     m_signal_changed_selection.emit();
+}
+
+
+void GraphDrawingArea::save_to(const std::string& filename, int width, int height)
+{
+    if (!m_graph)
+        return;
+
+    double minX = std::numeric_limits<double>::max();
+    double minY = std::numeric_limits<double>::max();
+    double maxX = std::numeric_limits<double>::min();
+    double maxY = std::numeric_limits<double>::min();
+
+    for (auto [vi, vend] = m_graph->iter_vertices(); vi != vend; ++vi)
+    {
+        auto point = m_graph->get_vertex_coords(*vi);
+
+        if (point.x < minX)
+            minX = point.x;
+        if (point.x > maxX)
+            maxX = point.x;
+        if (point.y < minY)
+            minY = point.y;
+        if (point.y > maxY)
+            maxY = point.y;
+    }
+
+    double max_dist = std::max(std::abs(maxX - minX), std::abs(maxY - minY));
+
+    double save_scale_factor = m_scale_factor;
+    m_scale_factor = static_cast<double>(std::max(width, height)) / max_dist;
+
+    double save_offset_x = m_offset_x;
+    m_offset_x = (maxX - minX) / 2.0;
+    double save_offset_y = m_offset_y;
+    m_offset_y = (maxY - minY) / 2.0;
+
+    auto surface = Cairo::ImageSurface::create(
+        Cairo::Surface::Format::RGB24, width, height);
+
+    auto context = Cairo::Context::create(surface);
+
+    on_draw(context, width, height);
+
+    surface->write_to_png(filename);
+
+    m_scale_factor = save_scale_factor;
+    m_offset_x = save_offset_x;
+    m_offset_y = save_offset_y;
 }
 
 
@@ -300,8 +350,8 @@ void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
     cr->set_source_rgb(1.0, 1.0, 1.0);
     cr->paint();
 
-    cr->translate(m_offset_x, m_offset_y);
     cr->scale(m_scale_factor, m_scale_factor);
+    cr->translate(m_offset_x, m_offset_y);
 
     cr->set_source_rgb(0.0, 0.0, 0.0);
 

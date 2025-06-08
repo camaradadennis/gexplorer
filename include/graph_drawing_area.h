@@ -25,6 +25,8 @@ public:
     bool set_tgt_vertex_id(std::size_t);
     void set_editable(bool);
 
+    void save_to(const std::string&, int, int);
+
     std::optional<std::size_t> get_src_vertex_id() const;
     std::optional<std::size_t> get_tgt_vertex_id() const;
     std::optional<std::size_t> get_num_vertices() const;

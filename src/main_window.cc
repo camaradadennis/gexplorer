@@ -40,6 +40,14 @@ MainWindow::MainWindow(BaseObjectType* cobject,
     button_open->signal_clicked().connect(
         sigc::mem_fun(*this, &MainWindow::open_file_dialog));
 
+    auto button_save = builder->get_widget<Gtk::Button>("button-save");
+    if (!button_save)
+        THROW_INVALID_ID("button-save");
+
+    button_save->signal_clicked().connect([this] () {
+        this->m_graph_area->save_to("somefile.png", 800, 600);
+    });
+
     m_toggle_edit = builder->get_widget<Gtk::CheckButton>("toggle-edit");
     if (!m_toggle_edit)
         THROW_INVALID_ID("toggle-edit");
