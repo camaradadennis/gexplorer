@@ -180,6 +180,12 @@ void GraphDrawingArea::set_graph(std::unique_ptr<Graph> graph)
 }
 
 
+bool GraphDrawingArea::has_graph() const
+{
+    return m_graph? true : false;
+}
+
+
 void GraphDrawingArea::save_to(const std::string& filename, int width, int height)
 {
     if (!m_graph)

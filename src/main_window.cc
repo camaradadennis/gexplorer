@@ -3,9 +3,10 @@
 #include "graph_drawing_area.h"
 #include "main_window.h"
 
+#include <giomm/liststore.h>
 #include <gtkmm/alertdialog.h>
-#include <gtkmm/button.h>
 #include <gtkmm/error.h>
+#include <gtkmm/filefilter.h>
 
 
 #define THROW_INVALID_ID(id) \
@@ -31,6 +32,7 @@ MainWindow::MainWindow(BaseObjectType* cobject,
 
     button_new->signal_clicked().connect([this] () {
         this->m_graph_area->set_graph( Graph::create() );
+        this->with_graph_opened(true);
     });
 
     auto button_open = builder->get_widget<Gtk::Button>("button-open");
@@ -40,12 +42,20 @@ MainWindow::MainWindow(BaseObjectType* cobject,
     button_open->signal_clicked().connect(
         sigc::mem_fun(*this, &MainWindow::open_file_dialog));
 
-    auto button_save = builder->get_widget<Gtk::Button>("button-save");
-    if (!button_save)
+    m_button_save = builder->get_widget<Gtk::Button>("button-save");
+    if (!m_button_save)
         THROW_INVALID_ID("button-save");
 
-    button_save->signal_clicked().connect([this] () {
-        this->m_graph_area->save_to("somefile.png", 800, 600);
+    m_button_save->signal_clicked().connect(
+        sigc::mem_fun(*this, &MainWindow::save_file_dialog));
+
+    m_button_close = builder->get_widget<Gtk::Button>("button-close");
+    if (!m_button_close)
+        THROW_INVALID_ID("button-close");
+
+    m_button_close->signal_clicked().connect([this] () {
+        this->m_graph_area->set_graph(nullptr);
+        this->with_graph_opened(false);
     });
 
     m_toggle_edit = builder->get_widget<Gtk::CheckButton>("toggle-edit");
@@ -105,6 +115,16 @@ void MainWindow::open_file_dialog()
     auto file_dialog = Gtk::FileDialog::create();
     file_dialog->set_title("Select new graph file");
 
+    auto filters = Gio::ListStore<Gtk::FileFilter>::create();
+
+    auto osm_filter = Gtk::FileFilter::create();
+    osm_filter->set_name("OSM files");
+    osm_filter->add_pattern("*.osm");
+
+    filters->append(osm_filter);
+
+    file_dialog->set_filters(filters);
+
     file_dialog->open(*this, sigc::bind(
         sigc::mem_fun(*this, &MainWindow::on_file_selection),
         file_dialog
@@ -130,6 +150,8 @@ void MainWindow::on_file_selection(
         m_tgt_field->set_data(vertex_list);
 
         m_graph_area->set_graph(std::move(g));
+
+        with_graph_opened(true);
     }
     catch (const osm_parser::ParserError& err)
     {
@@ -148,6 +170,45 @@ void MainWindow::on_file_selection(
 }
 
 
+void MainWindow::save_file_dialog()
+{
+    auto file_dialog = Gtk::FileDialog::create();
+
+    auto filters = Gio::ListStore<Gtk::FileFilter>::create();
+
+    auto png_filter = Gtk::FileFilter::create();
+    png_filter->set_name("PNG images");
+    png_filter->add_pattern("*.png");
+
+    filters->append(png_filter);
+
+    file_dialog->set_filters(filters);
+
+    file_dialog->save(*this, sigc::bind(
+        sigc::mem_fun(*this, &MainWindow::on_save_selection),
+        file_dialog
+    ));
+}
+
+
+void MainWindow::on_save_selection(
+        const Glib::RefPtr<Gio::AsyncResult>& result,
+        const Glib::RefPtr<Gtk::FileDialog>& dialog)
+{
+    try
+    {
+        auto file = dialog->save_finish(result);
+        std::string fpath = file->get_path();
+        m_graph_area->save_to(fpath, 800, 600);
+    }
+    catch (const Gtk::DialogError& err)
+    {
+        if (err.code() != Gtk::DialogError::DISMISSED)
+            throw err;
+    }
+}
+
+
 void MainWindow::on_selection_changed()
 {
     m_info_field->set_num(m_graph_area->get_num_vertices());
@@ -155,4 +216,11 @@ void MainWindow::on_selection_changed()
     m_info_field->set_source(m_graph_area->get_src_vertex_id());
     m_info_field->set_target(m_graph_area->get_tgt_vertex_id());
     m_info_field->set_distance(m_graph_area->get_path_distance());
+}
+
+
+void MainWindow::with_graph_opened(bool opened)
+{
+    m_button_save->set_sensitive(opened);
+    m_button_close->set_sensitive(opened);
 }

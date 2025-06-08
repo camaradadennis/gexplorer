@@ -21,6 +21,7 @@ public:
     GraphDrawingArea(BaseObjectType*, const Glib::RefPtr<Gtk::Builder>&);
 
     void set_graph(std::unique_ptr<Graph>);
+    bool has_graph() const;
     bool set_src_vertex_id(std::size_t);
     bool set_tgt_vertex_id(std::size_t);
     void set_editable(bool);

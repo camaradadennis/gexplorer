@@ -27,6 +27,14 @@
               <object class='GtkButton' id='button-save'>
                 <property name='icon-name'>document-save</property>
                 <property name='tooltip-text'>Save graph</property>
+                <property name='sensitive'>false</property>
+              </object>
+            </child>
+            <child>
+              <object class='GtkButton' id='button-close'>
+                <property name='icon-name'>window-close</property>
+                <property name='tooltip-text'>Close graph</property>
+                <property name='sensitive'>false</property>
               </object>
             </child>
           </object>
