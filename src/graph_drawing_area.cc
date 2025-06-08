@@ -216,9 +216,10 @@ void GraphDrawingArea::save_to(const std::string& filename, int width, int heigh
     m_scale_factor = static_cast<double>(std::max(width, height)) / max_dist;
 
     double save_offset_x = m_offset_x;
-    m_offset_x = (maxX - minX) / 2.0;
     double save_offset_y = m_offset_y;
-    m_offset_y = (maxY - minY) / 2.0;
+
+    m_offset_x = (width / (2.0 * m_scale_factor)) - ((maxX + minX) / 2.0);
+    m_offset_y = (height / (2.0 * m_scale_factor)) - ((maxY + minY) / 2.0);
 
     auto surface = Cairo::ImageSurface::create(
         Cairo::Surface::Format::RGB24, width, height);
