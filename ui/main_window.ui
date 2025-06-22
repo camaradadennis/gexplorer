@@ -139,6 +139,16 @@
                         </property>
                       </object>
                     </child>
+                    <child>
+                      <object class='GtkFrame'>
+                        <property name='label'>Time to compute path (sec)</property>
+                        <property name='child'>
+                          <object class='GtkLabel' id='path-elapsed'>
+                            <property name='justify'>GTK_JUSTIFY_CENTER</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>

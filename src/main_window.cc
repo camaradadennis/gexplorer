@@ -226,6 +226,7 @@ void MainWindow::on_selection_changed()
     m_info_field->set_source(m_graph_area->get_src_vertex_id());
     m_info_field->set_target(m_graph_area->get_tgt_vertex_id());
     m_info_field->set_distance(m_graph_area->get_path_distance());
+    m_info_field->set_elapsed_time(m_graph_area->get_elapsed_time());
 }
 
 

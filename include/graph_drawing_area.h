@@ -34,6 +34,7 @@ public:
     std::optional<std::size_t> get_num_vertices() const;
     std::optional<std::size_t> get_num_on_path() const;
     std::optional<double> get_path_distance() const;
+    std::optional<double> get_elapsed_time() const;
 
     SignalChangedSelection signal_changed_selection();
 
@@ -62,6 +63,7 @@ private:
     std::optional<Graph::VertexT> m_src_vertex{};
     std::optional<Graph::VertexT> m_tgt_vertex{};
     std::optional<double> m_path_distance;
+    std::optional<double> m_path_processing_time;
     std::vector<Graph::VertexT> m_path;
 
     SignalChangedSelection m_signal_changed_selection;

@@ -5,6 +5,7 @@
 #include <gtkmm/gesturedrag.h>
 
 #include <cmath>       // for sqrt(), pow(), min(), max(), abs(), atan2()
+#include <chrono>      // for steady_clock
 #include <limits>      // for numeric_limits<>::max(), numeric_limits<>::min()
 #include <utility>     // for move()
 
@@ -171,6 +172,7 @@ void GraphDrawingArea::set_graph(std::unique_ptr<Graph> graph)
     m_src_vertex = {};
     m_tgt_vertex = {};
     m_path_distance = {};
+    m_path_processing_time = {};
     m_path.clear();
 
     m_graph = std::move(graph);
@@ -242,6 +244,7 @@ void GraphDrawingArea::set_src_vertex(const Graph::VertexT& vertex)
     m_path.clear();
     m_tgt_vertex = {};
     m_path_distance = {};
+    m_path_processing_time = {};
     m_src_vertex = vertex;
 
     m_signal_changed_selection.emit();
@@ -266,10 +269,16 @@ bool GraphDrawingArea::set_src_vertex_id(std::size_t id)
 
 void GraphDrawingArea::set_tgt_vertex(const Graph::VertexT& vertex)
 {
+    auto start_time = std::chrono::steady_clock::now();
+
     m_path.clear();
     m_tgt_vertex = vertex;
     m_path_distance =
         m_graph->plot_path(*m_src_vertex, *m_tgt_vertex, m_path);
+
+    std::chrono::duration<double> elapsed =
+        std::chrono::steady_clock::now() - start_time;
+    m_path_processing_time = elapsed.count();
 
     m_signal_changed_selection.emit();
 }
@@ -343,6 +352,12 @@ std::optional<std::size_t> GraphDrawingArea::get_num_on_path() const
 std::optional<double> GraphDrawingArea::get_path_distance() const
 {
     return m_path_distance;
+}
+
+
+std::optional<double> GraphDrawingArea::get_elapsed_time() const
+{
+    return m_path_processing_time;
 }
 
 

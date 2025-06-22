@@ -31,11 +31,16 @@ InfoField::InfoField(BaseObjectType* cobject,
     if (!m_num)
         THROW_INVALID_ID("path-distance");
 
+    m_elapsed = builder->get_widget<Gtk::Label>("path-elapsed");
+    if (!m_elapsed)
+        THROW_INVALID_ID("path-elapsed");
+
     set_num();
     set_num_path();
     set_source();
     set_target();
     set_distance();
+    set_elapsed_time();
 }
 
 
@@ -86,4 +91,13 @@ void InfoField::set_distance(std::optional<double> dist)
     }
     else
         m_distance->set_label("-");
+}
+
+
+void InfoField::set_elapsed_time(std::optional<double> elapsed)
+{
+    if (elapsed)
+        m_elapsed->set_label(std::to_string(*elapsed));
+    else
+        m_elapsed->set_label("-");
 }
