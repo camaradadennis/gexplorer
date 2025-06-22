@@ -76,6 +76,16 @@ MainWindow::MainWindow(BaseObjectType* cobject,
         );
     });
 
+    m_toggle_show_weights = builder->get_widget<Gtk::CheckButton>("toggle-weights");
+    if (!m_toggle_show_weights)
+        THROW_INVALID_ID("toggle-weights");
+
+    m_toggle_show_weights->signal_toggled().connect([this] () {
+        this->m_graph_area->set_show_weights(
+            this->m_toggle_show_weights->get_active()
+        );
+    });
+
     m_src_field = Gtk::Builder::get_widget_derived<SearchField>(
         builder, "source-field");
     if (!m_src_field)

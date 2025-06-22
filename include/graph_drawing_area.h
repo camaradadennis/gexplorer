@@ -26,6 +26,7 @@ public:
     bool set_tgt_vertex_id(std::size_t);
     void set_editable(bool);
     void set_show_arrows(bool);
+    void set_show_weights(bool);
 
     void save_to(const std::string&, int, int);
 
@@ -49,6 +50,7 @@ private:
 
     bool m_editable{ false };
     bool m_view_arrows{ false };
+    bool m_view_weights{ false };
 
     double m_scale_factor{ 1.0 };
     double m_offset_x{ 0.0 };

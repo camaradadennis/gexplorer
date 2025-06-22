@@ -83,6 +83,12 @@
                         <property name='tooltip-text'>View edge directions</property>
                       </object>
                     </child>
+                    <child>
+                      <object class='GtkCheckButton' id='toggle-weights'>
+                        <property name='label'>View Weights</property>
+                        <property name='tooltip-text'>View edge weights</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>

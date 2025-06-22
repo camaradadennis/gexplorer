@@ -6,6 +6,7 @@
 
 #include <cmath>       // for sqrt(), pow(), min(), max(), abs(), atan2()
 #include <chrono>      // for steady_clock
+#include <format>      // for format()
 #include <limits>      // for numeric_limits<>::max(), numeric_limits<>::min()
 #include <utility>     // for move()
 
@@ -313,6 +314,13 @@ void GraphDrawingArea::set_show_arrows(bool state)
 }
 
 
+void GraphDrawingArea::set_show_weights(bool state)
+{
+    m_view_weights = state;
+    queue_draw();
+}
+
+
 std::optional<std::size_t> GraphDrawingArea::get_src_vertex_id() const
 {
     if (m_src_vertex)
@@ -414,6 +422,23 @@ void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
             cr->line_to(-ARROW_PIXEL_LEN, ARROW_PIXEL_LEN/2.0);
             cr->close_path();
             cr->fill();
+            cr->restore();
+        }
+
+        if (m_view_weights)
+        {
+            auto center_x = (tgt_coords.x + src_coords.x) / 2.0;
+            auto center_y = (tgt_coords.y + src_coords.y) / 2.0;
+
+            auto message{ std::format("{:.0f}", m_graph->get_edge_weight(*vi)) };
+
+            cr->save();
+            cr->set_source_rgb(1.0, 1.0, 1.0);
+            cr->arc(center_x, center_y, VERTEX_PIXEL_RADIUS, 0.0, 2 * M_PI);
+            cr->fill();
+            cr->set_source_rgb(0.6, 0.6, 0.6);
+            cr->move_to(center_x, center_y);
+            cr->show_text(message.c_str());
             cr->restore();
         }
     }

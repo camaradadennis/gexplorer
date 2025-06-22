@@ -46,6 +46,7 @@ private:
 
     Gtk::CheckButton* m_toggle_edit;
     Gtk::CheckButton* m_toggle_show_arrows;
+    Gtk::CheckButton* m_toggle_show_weights;
 };
 
 #endif // MAIN_WINDOW_H
