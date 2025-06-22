@@ -360,7 +360,7 @@ void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
     cr->scale(m_scale_factor, m_scale_factor);
     cr->translate(m_offset_x, m_offset_y);
 
-    cr->set_source_rgb(0.0, 0.0, 0.0);
+    cr->set_source_rgb(0.6, 0.6, 0.6);
 
     for (auto [vi, vend] = m_graph->iter_edges(); vi != vend; ++vi)
     {
@@ -376,7 +376,7 @@ void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
         cr->stroke();
     }
 
-    cr->set_source_rgb(0.4, 0.4, 0.4);
+    cr->set_source_rgb(0.3, 0.3, 0.3);
 
     for (auto [vi, vend] = m_graph->iter_vertices(); vi != vend; ++vi)
     {
