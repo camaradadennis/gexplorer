@@ -81,6 +81,18 @@ std::vector<std::size_t> Graph::get_vertex_id_list() const
 }
 
 
+double Graph::get_edge_weight(const Graph::EdgeT& edge) const
+{
+    return m_adj_list[edge].weight;
+}
+
+
+bool Graph::is_edge_oneway(const Graph::EdgeT& edge) const
+{
+    return m_adj_list[edge].oneway;
+}
+
+
 double Graph::plot_path(const Graph::VertexT& src,
                         const Graph::VertexT& tgt,
                         std::vector<Graph::VertexT>& path) const

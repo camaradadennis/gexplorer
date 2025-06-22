@@ -62,6 +62,8 @@ public:
 
     VertexT get_edge_src(const EdgeT&) const;
     VertexT get_edge_tgt(const EdgeT&) const;
+    double get_edge_weight(const EdgeT&) const;
+    bool is_edge_oneway(const EdgeT&) const;
 
     std::pair<VertexIter, VertexIter> iter_vertices() const;
     std::pair<EdgeIter, EdgeIter> iter_edges() const;

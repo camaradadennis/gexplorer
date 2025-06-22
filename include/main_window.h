@@ -45,6 +45,7 @@ private:
     Gtk::Button* m_button_close;
 
     Gtk::CheckButton* m_toggle_edit;
+    Gtk::CheckButton* m_toggle_show_arrows;
 };
 
 #endif // MAIN_WINDOW_H

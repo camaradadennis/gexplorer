@@ -4,11 +4,12 @@
 #include <gtkmm/eventcontrollerkey.h>
 #include <gtkmm/gesturedrag.h>
 
-#include <cmath>       // for sqrt(), pow(), min(), max(), abs()
+#include <cmath>       // for sqrt(), pow(), min(), max(), abs(), atan2()
 #include <limits>      // for numeric_limits<>::max(), numeric_limits<>::min()
 #include <utility>     // for move()
 
 #define VERTEX_PIXEL_RADIUS 5.0
+#define ARROW_PIXEL_LEN 10.0
 
 
 GraphDrawingArea::GraphDrawingArea(BaseObjectType* cobject,
@@ -296,6 +297,13 @@ void GraphDrawingArea::set_editable(bool state)
 }
 
 
+void GraphDrawingArea::set_show_arrows(bool state)
+{
+    m_view_arrows = state;
+    queue_draw();
+}
+
+
 std::optional<std::size_t> GraphDrawingArea::get_src_vertex_id() const
 {
     if (m_src_vertex)
@@ -374,6 +382,25 @@ void GraphDrawingArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
         cr->line_to(tgt_coords.x, tgt_coords.y);
 
         cr->stroke();
+
+        if (m_view_arrows)
+        {
+            auto dx = tgt_coords.x - src_coords.x;
+            auto dy = tgt_coords.y - src_coords.y;
+
+            auto center_x = src_coords.x + dx * 0.7;
+            auto center_y = src_coords.y + dy * 0.7;
+
+            cr->save();
+            cr->translate(center_x, center_y);
+            cr->rotate(std::atan2(dy, dx));
+            cr->move_to(0, 0);
+            cr->line_to(-ARROW_PIXEL_LEN, -ARROW_PIXEL_LEN/2.0);
+            cr->line_to(-ARROW_PIXEL_LEN, ARROW_PIXEL_LEN/2.0);
+            cr->close_path();
+            cr->fill();
+            cr->restore();
+        }
     }
 
     cr->set_source_rgb(0.3, 0.3, 0.3);

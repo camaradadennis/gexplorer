@@ -25,6 +25,7 @@ public:
     bool set_src_vertex_id(std::size_t);
     bool set_tgt_vertex_id(std::size_t);
     void set_editable(bool);
+    void set_show_arrows(bool);
 
     void save_to(const std::string&, int, int);
 
@@ -46,6 +47,7 @@ private:
     bool on_key_pressed(guint, guint, Gdk::ModifierType);
 
     bool m_editable{ false };
+    bool m_view_arrows{ false };
 
     double m_scale_factor{ 1.0 };
     double m_offset_x{ 0.0 };

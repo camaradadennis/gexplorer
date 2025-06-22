@@ -66,6 +66,16 @@ MainWindow::MainWindow(BaseObjectType* cobject,
         this->m_graph_area->set_editable(this->m_toggle_edit->get_active());
     });
 
+    m_toggle_show_arrows = builder->get_widget<Gtk::CheckButton>("toggle-view");
+    if (!m_toggle_show_arrows)
+        THROW_INVALID_ID("toggle-view");
+
+    m_toggle_show_arrows->signal_toggled().connect([this] () {
+        this->m_graph_area->set_show_arrows(
+            this->m_toggle_show_arrows->get_active()
+        );
+    });
+
     m_src_field = Gtk::Builder::get_widget_derived<SearchField>(
         builder, "source-field");
     if (!m_src_field)
